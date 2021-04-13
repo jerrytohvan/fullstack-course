@@ -1,0 +1,9 @@
+env
+node_modules
+.vscode
+.idea
+googleOAuthToken.json
+googleCredentials.json
+.env
+.DS_Store
+telepresence.log
