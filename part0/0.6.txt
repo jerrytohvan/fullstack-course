@@ -1,0 +1,29 @@
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa
+server-->browser: HTML-code
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+server-->browser: main.css
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+server-->browser: spa.js
+note over browser:
+`xhttp.open("GET", "/exampleapp/data.json", true)` is triggered
+end note
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+server-->browser: 201 with {[{"content":"Esto es una prueba","date":"2021-04-12T22:48:49.678Z"}, ... ]
+
+note over browser:
+As request accepted succesfully, 
+execute `redrawNotes()` to
+populate notes to HTML
+end note
+
+note over browser:
+As user submits new notes, 
+`form.onsubmit` event is triggered,
+new value added to `notes[]` and `redrawNotes()` execute.
+Lasltly, send POST request via `sendToServer`
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server-->browser: 201 with {"message":"note created"}
