@@ -4,11 +4,15 @@ const Header = (props) => (
   <h1>{props.course}</h1>
 );
 
+const Part = (props) => (
+  <p>
+    {props.part} {props.exercise}
+  </p>
+);
+
 const Content = (props) => (
    props.content.map(content =>(
-    <p>
-      {content.part} {content.exercise}
-    </p>
+    <Part part={content.part} exercise={content.exercise}/>
     )
   )
 );
