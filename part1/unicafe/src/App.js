@@ -16,12 +16,19 @@ const Statistics = ({ good, neutral, bad, getTotal, getAverage, getPositiveRate 
   return (
     <>
       <Header label="statistics" />
-      <Text label="good" total={good} />
-      <Text label="neutral" total={neutral} />
-      <Text label="bad" total={bad} />
-      <Text label="all" total={getTotal(good, neutral, bad)} />
-      <Text label="average" total={getAverage(good - bad, getTotal(good, neutral, bad))} />
-      <Text label="positive" total={getPositiveRate(good, getTotal(good, neutral, bad))} suffix={"%"} />
+
+      {
+        getTotal(good, neutral, bad) > 0 ?
+          <>
+            <Text label="good" total={good} />
+            <Text label="neutral" total={neutral} />
+            <Text label="bad" total={bad} />
+            <Text label="all" total={getTotal(good, neutral, bad)} />
+            <Text label="average" total={getAverage(good - bad, getTotal(good, neutral, bad))} />
+            <Text label="positive" total={getPositiveRate(good, getTotal(good, neutral, bad))} suffix={"%"} />
+          </>
+          : <Text label="No feedback given" />
+      }
     </>
   )
 }
