@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 const Header = ({ label }) => <h1>{label}</h1>;
 
-const Text = ({ label, total, suffix = undefined }) => <p>{label} {total} {suffix ?? ""}</p>
+const StatisticLine  = ({ value, total, suffix = undefined }) => <p>{value} {total} {suffix ?? ""}</p>
 
 const getTotal = (good, neutral, bad) => good + neutral + bad;
 
@@ -20,18 +20,19 @@ const Statistics = ({ good, neutral, bad, getTotal, getAverage, getPositiveRate 
       {
         getTotal(good, neutral, bad) > 0 ?
           <>
-            <Text label="good" total={good} />
-            <Text label="neutral" total={neutral} />
-            <Text label="bad" total={bad} />
-            <Text label="all" total={getTotal(good, neutral, bad)} />
-            <Text label="average" total={getAverage(good - bad, getTotal(good, neutral, bad))} />
-            <Text label="positive" total={getPositiveRate(good, getTotal(good, neutral, bad))} suffix={"%"} />
+            <StatisticLine  value="good" total={good} />
+            <StatisticLine  value="neutral" total={neutral} />
+            <StatisticLine  value="bad" total={bad} />
+            <StatisticLine  value="all" total={getTotal(good, neutral, bad)} />
+            <StatisticLine  value="average" total={getAverage(good - bad, getTotal(good, neutral, bad))} />
+            <StatisticLine  value="positive" total={getPositiveRate(good, getTotal(good, neutral, bad))} suffix={"%"} />
           </>
-          : <Text label="No feedback given" />
+          : <StatisticLine  value="No feedback given" />
       }
     </>
   )
 }
+
 const App = () => {
   // save clicks of each button to its own state
   const [good, setGood] = useState(0);
