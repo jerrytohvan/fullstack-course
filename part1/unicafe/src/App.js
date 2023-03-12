@@ -4,7 +4,13 @@ import { useState } from 'react'
 
 const Header = ({label}) => <h1>{label}</h1>;
 
-const Text = ({label, total}) => <p>{label} {total}</p>
+const Text = ({label, total, suffix = undefined}) => <p>{label} {total} {suffix ?? ""}</p>
+
+const getTotal = (good, neutral, bad) => good + neutral + bad;
+
+const getAverage = (totalPoints, total) => totalPoints ? totalPoints / total : 0;
+
+const getPositiveRate = (totalPositive, total) => totalPositive ? totalPositive / total * 100 : 0;
 
 const App = () => {
   // save clicks of each button to its own state
@@ -22,7 +28,9 @@ const App = () => {
       <Text label="good" total={good}/>
       <Text label="neutral" total={neutral}/>
       <Text label="bad" total={bad}/>
-
+      <Text label="all" total={getTotal(good, neutral, bad)}/>
+      <Text label="average" total={getAverage(good - bad, getTotal(good, neutral, bad))}/>
+      <Text label="positive" total={getPositiveRate(good, getTotal(good, neutral, bad))} suffix={"%"}/>
     </>
   )
 }
