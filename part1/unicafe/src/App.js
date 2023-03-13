@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 const Header = ({ label }) => <h1>{label}</h1>;
 
-const StatisticLine  = ({ value, total, suffix = undefined }) => <p>{value} {total} {suffix ?? ""}</p>
+const StatisticLine  = ({ value, total, suffix = undefined }) => <td>{value} {total} {suffix ?? ""}</td>
 
 const getTotal = (good, neutral, bad) => good + neutral + bad;
 
@@ -16,25 +16,44 @@ const Statistics = ({ good, neutral, bad, getTotal, getAverage, getPositiveRate 
   return (
     <>
       <Header label="statistics" />
-
+      <table>
+        <tbody>
       {
         getTotal(good, neutral, bad) > 0 ?
           <>
-            <StatisticLine  value="good" total={good} />
-            <StatisticLine  value="neutral" total={neutral} />
-            <StatisticLine  value="bad" total={bad} />
-            <StatisticLine  value="all" total={getTotal(good, neutral, bad)} />
-            <StatisticLine  value="average" total={getAverage(good - bad, getTotal(good, neutral, bad))} />
-            <StatisticLine  value="positive" total={getPositiveRate(good, getTotal(good, neutral, bad))} suffix={"%"} />
+           
+                <tr>         
+                  <StatisticLine  value="good" total={good} />
+                </tr>
+                <tr>
+                  <StatisticLine  value="neutral" total={neutral} />
+                </tr>
+                <tr>
+                  <StatisticLine  value="bad" total={bad} />
+                </tr>
+                <tr>
+                  <StatisticLine  value="all" total={getTotal(good, neutral, bad)} />
+                </tr>
+                <tr>
+                  <StatisticLine  value="average" total={getAverage(good - bad, getTotal(good, neutral, bad))} />
+                </tr>
+                <tr>
+                  <StatisticLine  value="positive" total={getPositiveRate(good, getTotal(good, neutral, bad))} suffix={"%"} />
+                </tr>
+              
           </>
-          : <StatisticLine  value="No feedback given" />
+          : 
+                <><tr> 
+                  <StatisticLine  value="No feedback given" />
+                </tr></>
       }
+        </tbody>
+      </table>
     </>
   )
 }
 
 const App = () => {
-  // save clicks of each button to its own state
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
