@@ -1,15 +1,27 @@
 
 import { Dispatch, useState } from 'react';
-import './App.css';
 
-type ButtonType = {
-  arrayLength: number, 
-  onClickEvent: Dispatch<React.SetStateAction<number>>
+type RandomButtonType = {
+  arrayLength: number,
+  setSelected: Dispatch<React.SetStateAction<number>>
 }
-const Button: React.FC<ButtonType> = ({arrayLength, onClickEvent}) => {
-  const randomIndex:number = Math.floor(Math.random() * (arrayLength + 1));
-  return <button onClick={() => onClickEvent(randomIndex)}>next anecdote</button>
+
+
+type VoteButtonType = {
+  anecdotesIndex: number,
+  votes: number[],
+  setVotes: Dispatch<React.SetStateAction<number[]>>
 }
+
+const addNewVotes = (array: number[], index: number) => {
+  const newArray = [...array];
+  newArray[index] = newArray[index] + 1;
+  return newArray;
+};
+
+const initArray = (anecdotesLength: number) => new Array(anecdotesLength).fill(0)
+const getRandomNumber = (anecdotesLength: number) => Math.floor(Math.random() * anecdotesLength);
+
 
 const App = () => {
   const anecdotes = [
@@ -22,14 +34,27 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.'
   ]
-   
+
   const [selected, setSelected] = useState<number>(0);
+  const [votes, setVotes] = useState<number[]>(initArray(anecdotes.length));
+
+  const RandomButton = ({ arrayLength, setSelected }: RandomButtonType) => {
+    return <button onClick={() => setSelected(getRandomNumber(arrayLength))}>next anecdote</button>
+  }
+
+  const VoteButton = ({ anecdotesIndex, votes, setVotes }: VoteButtonType) => {
+    const newArray = addNewVotes(votes, anecdotesIndex);
+    return <button onClick={() => setVotes(newArray)}>vote</button>;
+  }
 
   return (
     <div>
       {anecdotes[selected]}
-      <br/>
-      <Button arrayLength={anecdotes.length} onClickEvent={setSelected}/>
+      <br />
+      <p>has {votes[selected]} votes.</p>
+      <br />
+      <VoteButton anecdotesIndex={selected} votes={votes} setVotes={setVotes} />
+      <RandomButton arrayLength={anecdotes.length} setSelected={setSelected} />
     </div>
   )
 }
