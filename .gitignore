@@ -7,3 +7,4 @@ googleCredentials.json
 .env
 .DS_Store
 telepresence.log
+*.code-workspace
