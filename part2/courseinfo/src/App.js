@@ -1,40 +1,5 @@
 import React from 'react'
-
-const Header = (props) => (
-  <h1>{props.course}</h1>
-);
-
-const Part = (props) => (
-  <p>
-    {props.part} {props.exercise}
-  </p>
-);
-
-const Content = (props) => (
-  props.parts.map(content => (
-    <Part key={content.id} part={content.name} exercise={content.exercises} />
-  )
-  )
-);
-
-const Total = (props) => {
-  const totalExercise = props.parts.reduce((accumulator, content) => accumulator + content.exercises, 0)
-  return (
-    <p>
-      Number of exercises {totalExercise}
-    </p>
-  )
-};
-
-const Course = ({ course }) => {
-  return (
-    <>
-      <Header course={course.name} />
-      <Content parts={course.parts} />
-      {/* <Total parts={course.parts} /> */}
-    </>
-  )
-};
+import { Course } from './components/Course';
 
 
 const App = () => {
