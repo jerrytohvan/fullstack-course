@@ -11,16 +11,26 @@ const App = () => {
 
   const [newName, setNewName] = useState('');
 
+
+  const isPhonebookExists = () => {
+    const existingPerson = persons.filter(person => person.name === newName);
+    return existingPerson.length > 0;
+  };
+
   const handleInputChange = (event) => {
     setNewName(event.target.value);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setPersons([...persons, {
-      id: uuidv1(),
-      name: newName
-    }]);
+    if (isPhonebookExists()) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
+      setPersons([...persons, {
+        id: uuidv1(),
+        name: newName
+      }]);
+    }
     event.target[0].value = '' // Reinitialize name input
     setNewName('');
   };
