@@ -1,6 +1,6 @@
 import Note from './components/Note';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import noteService from './services/notes';
 
 const App = (props) => {
   const [notes, setNotes] = useState([]);
@@ -10,14 +10,12 @@ const App = (props) => {
   const [showAll, setShowAll] = useState(true);
 
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/notes')
-      .then(response => {
-        console.log('promise fulfilled')
-        setNotes(response.data)
+    noteService
+      .getAll()
+      .then(initialNotes => {
+        setNotes(initialNotes)
       })
-  }, []);
+  }, [])
 
   console.log('render', notes.length, 'notes');
 
@@ -27,15 +25,36 @@ const App = (props) => {
       content: newNote,
       important: Math.random() < 0.5,
       id: notes.length + 1,
-    }
+    };
 
-    setNotes(notes.concat(noteObject))
-    setNewNote('')
+    noteService
+      .create(noteObject)
+      .then(returnedNote => {
+        setNotes(notes.concat(returnedNote))
+        setNewNote('')
+      });
   }
+
   const handleNoteChange = (event) => {
     console.log(event.target.value)
     setNewNote(event.target.value)
   };
+
+  const toggleImportanceOf = id => {
+    const note = notes.find(n => n.id === id)
+    const changedNote = { ...note, important: !note.important }
+    noteService
+    .update(id, changedNote)
+    .then(returnedNote => {
+      setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+    })
+    .catch(error => {
+      alert(
+        `the note '${note.content}' was already deleted from server: ${error.message}`
+      )
+      setNotes(notes.filter(n => n.id !== id))
+    })
+  }
 
   const notesToShow = showAll
     ? notes
@@ -52,7 +71,7 @@ const App = (props) => {
       <ul>
         <ul>
           {notesToShow.map(note =>
-            <Note key={note.id} note={note} />
+            <Note key={note.id} note={note} toggleImportance={() => toggleImportanceOf(note.id)}/>
           )}
         </ul>
       </ul>
