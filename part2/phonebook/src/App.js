@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
-import { v1 as uuidv1 } from 'uuid';
 import { Filter } from './components/Filter';
 import { PersonForm } from './components/PersonForm';
 import { Persons } from './components/Persons';
-import axios from 'axios';
+import { getAllPhonebook, addPhonebook } from './services/phonebook';
 
 const App = () => {
-  const [persons, setPersons] = useState([
-
-  ]);
+  const [persons, setPersons] = useState([]);
 
   const [newPhonebook, setNewPhonebook] = useState({
     name: '',
@@ -18,12 +15,7 @@ const App = () => {
   const [filterName, setFilterName] = useState('');
 
   useEffect(() => {
-    console.log('Initializing /persons');
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      });
+    getAllPhonebook().then(persons => setPersons(persons));
   }, []);
 
   const isPhonebookExists = () => {
@@ -48,10 +40,9 @@ const App = () => {
     if (isPhonebookExists()) {
       alert(`${newPhonebook.name} is already added to phonebook`);
     } else {
-      setPersons([...persons, {
-        id: uuidv1(),
-        ...newPhonebook
-      }]);
+      addPhonebook(newPhonebook).then(
+        newPerson => setPersons([...persons, newPerson])
+      );
     }
     event.target[0].value = '' // Reinitialize name input
     event.target[1].value = '' // Reinitialize number input
