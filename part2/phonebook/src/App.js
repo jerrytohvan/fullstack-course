@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Filter } from './components/Filter';
 import { PersonForm } from './components/PersonForm';
 import { Persons } from './components/Persons';
-import { getAllPhonebook, addPhonebook, getPhonebook, deletePhonebook} from './services/phonebook';
+import { getAllPhonebook, addPhonebook, getPhonebook, deletePhonebook, patchPhonebook} from './services/phonebook';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -18,9 +18,20 @@ const App = () => {
     getAllPhonebook().then(persons => setPersons(persons));
   }, []);
 
+  const refreshPhonebookInputs = (event) => {
+    event.target[0].value = '' // Reinitialize name input
+    event.target[1].value = '' // Reinitialize number input
+
+    setNewPhonebook({
+      name: '',
+      number: ''
+    });
+  };
+
   const isPhonebookExists = () => {
     const existingPerson = persons.filter(person => person.name === newPhonebook.name);
-    return existingPerson.length > 0;
+    if (existingPerson.length > 0) return existingPerson[0];
+    return null;
   };
 
   const handleInputChange = (event) => {
@@ -37,20 +48,29 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (isPhonebookExists()) {
-      alert(`${newPhonebook.name} is already added to phonebook`);
+    const existingPhonebook = isPhonebookExists();
+    if (existingPhonebook) {
+      if(window.confirm(`${newPhonebook.name} is already added to phonebook, replace old number with a new one?`)){
+        patchPhonebook({id: existingPhonebook.id, number: newPhonebook.number }).then(newPhonebook => {
+          const updatedPersons = persons.map(person => {
+            if(person.id === newPhonebook.id){
+              return {
+                ...person,
+                number: newPhonebook.number
+              }
+            }
+            return person;
+          });
+          setPersons([...updatedPersons]);
+          refreshPhonebookInputs(event);
+        })
+      } 
     } else {
       addPhonebook(newPhonebook).then(
         newPerson => setPersons([...persons, newPerson])
       );
     }
-    event.target[0].value = '' // Reinitialize name input
-    event.target[1].value = '' // Reinitialize number input
-
-    setNewPhonebook({
-      name: '',
-      number: ''
-    });
+    refreshPhonebookInputs(event);
   };
 
   const handleDeletion = (id) => {

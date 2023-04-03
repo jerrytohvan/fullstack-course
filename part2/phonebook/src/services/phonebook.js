@@ -21,6 +21,12 @@ export const addPhonebook = (people) => {
     return response;
 }
 
+export const patchPhonebook = (people) => {
+    const request = axios.patch(`${baseUrl}/${people.id}`, { number: people.number });
+    const response = request.then(res => res.data);
+    return response;
+}
+
 export const deletePhonebook = (id) => {
     const request = axios.delete(`${baseUrl}/${id}`);
     const response = request.then(res => res.data);
