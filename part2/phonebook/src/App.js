@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Filter } from './components/Filter';
 import { PersonForm } from './components/PersonForm';
 import { Persons } from './components/Persons';
-import { getAllPhonebook, addPhonebook } from './services/phonebook';
+import { getAllPhonebook, addPhonebook, getPhonebook, deletePhonebook} from './services/phonebook';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -53,6 +53,21 @@ const App = () => {
     });
   };
 
+  const handleDeletion = (id) => {
+    getPhonebook(id)
+    .then(person => { 
+      if(window.confirm(`Delete ${person.name}?`)){
+        deletePhonebook(id).then(deletedPerson => {
+          setPersons(persons.filter(person => person.id !== id));
+        })
+      }
+    }).catch(error => {
+      console.error(error);
+      alert(`Phonebook ID: ${id} not found.`);
+    }
+    )
+  }
+
   const getAllNames = () => {
     if (filterName === '') return persons;
     return persons.filter(person => person.name.toLocaleLowerCase().includes(filterName.toLocaleLowerCase()));
@@ -67,7 +82,7 @@ const App = () => {
       <PersonForm handleInputChange={handleInputChange} handleSubmit={handleSubmit} />
 
       <h2>Numbers</h2>
-      <Persons persons={getAllNames()} />
+      <Persons persons={getAllNames()} handleDeletion={handleDeletion} />
     </div>
   );
 };
