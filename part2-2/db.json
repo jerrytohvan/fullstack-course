@@ -17,7 +17,7 @@
     },
     {
       "content": "a new note...",
-      "important": true,
+      "important": false,
       "id": 4
     },
     {
