@@ -73,10 +73,12 @@ const App = () => {
               }
             }
             return person;
-          });
+          })
           setPersons([...updatedPersons]);
           refreshPhonebookInputs(event);
-        })
+        }).catch( error =>
+          updateAppMessage('error', `Information of ${newPhonebook.name} has already been removed from server`)
+        );
       }
     } else {
       addPhonebook(newPhonebook).then(
