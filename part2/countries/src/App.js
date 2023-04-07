@@ -37,7 +37,7 @@ const App = () => {
         {
           (filterCountries().length > 10) ?
             'Too many matches, specify another filter' :
-            <FilteredCountries countries={filterCountries()} />
+            <FilteredCountries countries={filterCountries()} setCountry={setCountry} />
         }
 
       </div>
