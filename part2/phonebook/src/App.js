@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { Filter } from './components/Filter';
 import { PersonForm } from './components/PersonForm';
 import { Persons } from './components/Persons';
-import { getAllPhonebook, addPhonebook, getPhonebook, deletePhonebook, patchPhonebook} from './services/phonebook';
+import { AppMessage } from './components/AppMessage';
+
+import { getAllPhonebook, addPhonebook, getPhonebook, deletePhonebook, patchPhonebook } from './services/phonebook';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -13,6 +15,10 @@ const App = () => {
   });
 
   const [filterName, setFilterName] = useState('');
+  const [appMessage, setAppMessage] = useState({
+    type: '',
+    message: null
+  });
 
   useEffect(() => {
     getAllPhonebook().then(persons => setPersons(persons));
@@ -46,14 +52,21 @@ const App = () => {
     }
   };
 
+  const updateAppMessage = (type, message) => {
+    setAppMessage({ type, message });
+    setTimeout(() => {
+      setAppMessage({ type: '', message: null })
+    }, 5000);
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const existingPhonebook = isPhonebookExists();
     if (existingPhonebook) {
-      if(window.confirm(`${newPhonebook.name} is already added to phonebook, replace old number with a new one?`)){
-        patchPhonebook({id: existingPhonebook.id, number: newPhonebook.number }).then(newPhonebook => {
+      if (window.confirm(`${newPhonebook.name} is already added to phonebook, replace old number with a new one?`)) {
+        patchPhonebook({ id: existingPhonebook.id, number: newPhonebook.number }).then(newPhonebook => {
           const updatedPersons = persons.map(person => {
-            if(person.id === newPhonebook.id){
+            if (person.id === newPhonebook.id) {
               return {
                 ...person,
                 number: newPhonebook.number
@@ -64,10 +77,13 @@ const App = () => {
           setPersons([...updatedPersons]);
           refreshPhonebookInputs(event);
         })
-      } 
+      }
     } else {
       addPhonebook(newPhonebook).then(
-        newPerson => setPersons([...persons, newPerson])
+        newPerson => {
+          setPersons([...persons, newPerson]);
+          updateAppMessage('success', `Added ${newPerson.name}`);
+        }
       );
     }
     refreshPhonebookInputs(event);
@@ -75,17 +91,17 @@ const App = () => {
 
   const handleDeletion = (id) => {
     getPhonebook(id)
-    .then(person => { 
-      if(window.confirm(`Delete ${person.name}?`)){
-        deletePhonebook(id).then(deletedPerson => {
-          setPersons(persons.filter(person => person.id !== id));
-        })
+      .then(person => {
+        if (window.confirm(`Delete ${person.name}?`)) {
+          deletePhonebook(id).then(deletedPerson => {
+            setPersons(persons.filter(person => person.id !== id));
+          })
+        }
+      }).catch(error => {
+        console.error(error);
+        alert(`Phonebook ID: ${id} not found.`);
       }
-    }).catch(error => {
-      console.error(error);
-      alert(`Phonebook ID: ${id} not found.`);
-    }
-    )
+      )
   }
 
   const getAllNames = () => {
@@ -95,6 +111,7 @@ const App = () => {
 
   return (
     <div>
+      <AppMessage {...appMessage} />
       <h2>Phonebook</h2>
       <Filter handleInputChange={handleInputChange} />
 

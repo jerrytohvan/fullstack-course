@@ -1,4 +1,4 @@
-export const PersonForm = ({ handleSubmit,handleInputChange }) => {
+export const PersonForm = ({ handleSubmit, handleInputChange }) => {
     return (
         <>
             <form onSubmit={handleSubmit}>
