@@ -26,6 +26,22 @@ let persons = [
   },
 ];
 
+const validateInput = (data) => {
+  if (!data.name || !data.number) {
+    return {
+      error: "content missing",
+    };
+  }
+
+  const personExist = persons.find((person) => person.name === data.name);
+  if (personExist) {
+    return {
+      error: "name must be unique",
+    };
+  }
+  return null;
+};
+
 app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
@@ -55,30 +71,26 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(204).end();
 });
 
-// const generateId = () => {
-//   const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
-//   return maxId + 1;
-// };
+app.post("/api/persons", (request, response) => {
+  console.log(request.body);
+  const body = request.body;
 
-// app.post("/api/notes", (request, response) => {
-//   const body = request.body;
+  const validateData = validateInput(body);
 
-//   if (!body.content) {
-//     return response.status(400).json({
-//       error: "content missing",
-//     });
-//   }
+  if(validateData){
+    return response.status(400).json(validateData);
+  }
 
-//   const note = {
-//     content: body.content,
-//     important: body.important || false,
-//     id: generateId(),
-//   };
+  const person = {
+    name: body.name,
+    number: body.number || false,
+    id: Math.floor(Math.random() * 10000001),
+  };
 
-//   notes = notes.concat(note);
+  persons = persons.concat(person);
 
-//   response.json(note);
-// });
+  response.json(person);
+});
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
