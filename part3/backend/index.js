@@ -30,7 +30,7 @@ app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
 
-app.get("/api/person/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   const person = persons.find((person) => person.id === id);
   if (person) {
@@ -38,6 +38,12 @@ app.get("/api/person/:id", (request, response) => {
   } else {
     response.status(404).end();
   }
+});
+
+app.get("/info", (request, response) => {
+  const dateNow = new Date();
+  const displayData = `<p>Phonebook has info for ${persons.length} people</p><br/>${dateNow.toString()}`;
+  response.send(displayData);
 });
 
 // app.delete("/api/notes/:id", (request, response) => {
