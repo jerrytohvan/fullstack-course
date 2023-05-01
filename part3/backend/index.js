@@ -1,7 +1,15 @@
 const express = require("express");
+const morgan = require("morgan");
+
 const app = express();
 
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+
 app.use(express.json());
+app.use(morgan('tiny'));
 
 let persons = [
   {
@@ -77,7 +85,7 @@ app.post("/api/persons", (request, response) => {
 
   const validateData = validateInput(body);
 
-  if(validateData){
+  if (validateData) {
     return response.status(400).json(validateData);
   }
 
@@ -91,6 +99,9 @@ app.post("/api/persons", (request, response) => {
 
   response.json(person);
 });
+
+app.use(unknownEndpoint);
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
