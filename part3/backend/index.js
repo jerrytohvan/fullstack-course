@@ -42,7 +42,9 @@ app.get("/api/persons/:id", (request, response) => {
 
 app.get("/info", (request, response) => {
   const dateNow = new Date();
-  const displayData = `<p>Phonebook has info for ${persons.length} people</p><br/>${dateNow.toString()}`;
+  const displayData = `<p>Phonebook has info for ${
+    persons.length
+  } people</p><br/>${dateNow.toString()}`;
   response.send(displayData);
 });
 
