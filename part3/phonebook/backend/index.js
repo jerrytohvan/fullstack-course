@@ -42,17 +42,19 @@ let persons = [
 ];
 
 const validateInput = (data) => {
-  if (!data.name || !data.number) {
-    return {
-      error: "content missing",
-    };
-  }
+  if (data) {
+    if (!data.name || !data.number) {
+      return {
+        error: "content missing",
+      };
+    }
 
-  const personExist = persons.find((person) => person.name === data.name);
-  if (personExist) {
-    return {
-      error: "name must be unique",
-    };
+    const personExist = persons.find((person) => person.name === data.name);
+    if (personExist) {
+      return {
+        error: "name must be unique",
+      };
+    }
   }
   return null;
 };
@@ -81,8 +83,9 @@ app.get("/info", (request, response) => {
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
-  persons = persons.filter((person) => person.id === id);
-  if(persons.length === 0) return response.status(404).end();
+  const initialLength = persons.length;
+  persons = persons.filter((person) => person.id !== id);
+  if (persons.length === initialLength) return response.status(404).end();
 
   response.status(204).end();
 });
