@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const mongoose = require("mongoose");
 
 const cors = require("cors");
 
@@ -14,6 +15,8 @@ const requestLogger = (request, response, next) => {
   console.log("---");
   next();
 };
+
+const { Note } = require("./models/notes.js");
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
@@ -40,7 +43,12 @@ let notes = [
 ];
 
 app.get("/api/notes", (request, response) => {
-  response.end(JSON.stringify(notes));
+  return Note()
+    .find({})
+    .then((notes) => {
+      mongoose.connection.close();
+      response.json(notes);
+    });
 });
 
 app.get("/api/notes/:id", (request, response) => {
