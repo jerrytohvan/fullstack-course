@@ -16,7 +16,8 @@ const requestLogger = (request, response, next) => {
   next();
 };
 
-const { Note } = require("./models/notes.js");
+const { createDbConnection } = require("./models/client.js");
+const { Note } = require("./models/note.js");
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
@@ -42,12 +43,15 @@ let notes = [
   },
 ];
 
-app.get("/api/notes", (request, response) => {
-  return Note()
-    .find({})
+app.get("/api/notes", async (request, response) => {
+  await createDbConnection();
+  return Note.find({})
     .then((notes) => {
-      mongoose.connection.close();
+      console.log("notes", notes);
       response.json(notes);
+    })
+    .finally(() => {
+      mongoose.connection.close();
     });
 });
 
