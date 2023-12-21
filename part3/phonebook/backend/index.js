@@ -75,7 +75,7 @@ app.get("/info", (request, response) => {
   const dateNow = new Date();
   const displayData = `<p>Phonebook has info for ${
     persons.length
-  } people</p><br/>${dateNow.toString()}`;
+  } people</p>${dateNow.toString()}`;
   response.send(displayData);
 });
 
