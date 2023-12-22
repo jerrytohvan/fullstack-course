@@ -18,6 +18,10 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
 
+const { createDbConnection } = require("./models/client.js");
+const { Phonebook } = require("./models/phonebook.js");
+const { default: mongoose } = require("mongoose");
+
 let persons = [
   {
     id: 1,
@@ -59,17 +63,34 @@ const validateInput = (data) => {
   return null;
 };
 
-app.get("/api/persons", (request, response) => {
-  response.json(persons);
+app.get("/api/persons", async (request, response) => {
+  await createDbConnection();
+  return Phonebook.find({})
+    .then((result) => {
+      response.json(result);
+    })
+    .finally(() => mongoose.connection.close());
 });
 
-app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
+app.get("/api/persons/:id", async (request, response) => {
+  const id = request.params.id;
+  try {
+    await createDbConnection();
+    const fetchedPhonebook = await Phonebook.findOne({ _id: id })
+      .then((result) => result)
+      .catch((error) => {
+        throw error;
+      })
+      .finally(() => mongoose.connection.close());
+    if (fetchedPhonebook) {
+      response.json(fetchedPhonebook);
+    } else {
+      response.status(404).end();
+    }
+  } catch (error) {
+    return response
+      .status(500)
+      .json({ error: `Something wrong happened: ${error.message}` });
   }
 });
 
