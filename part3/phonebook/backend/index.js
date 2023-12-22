@@ -45,16 +45,28 @@ let persons = [
   },
 ];
 
-const validateInput = (data) => {
+const getAllPersons = async () => {
+  await createDbConnection();
+  return Phonebook.find({})
+    .then((result) => result)
+    .finally(() => mongoose.connection.close());
+};
+
+const validateInput = async (data) => {
   if (data) {
     if (!data.name || !data.number) {
       return {
         error: "content missing",
       };
     }
-
-    const personExist = persons.find((person) => person.name === data.name);
-    if (personExist) {
+    await createDbConnection();
+    const fetchExistingPhonebook = await Phonebook.findOne({ name: data.name })
+      .then((result) => result)
+      .catch((error) => {
+        throw error;
+      })
+      .finally(() => mongoose.connection.close());
+    if (fetchExistingPhonebook) {
       return {
         error: "name must be unique",
       };
@@ -64,12 +76,7 @@ const validateInput = (data) => {
 };
 
 app.get("/api/persons", async (request, response) => {
-  await createDbConnection();
-  return Phonebook.find({})
-    .then((result) => {
-      response.json(result);
-    })
-    .finally(() => mongoose.connection.close());
+  return response.json(await getAllPersons());
 });
 
 app.get("/api/persons/:id", async (request, response) => {
@@ -94,28 +101,48 @@ app.get("/api/persons/:id", async (request, response) => {
   }
 });
 
-app.get("/info", (request, response) => {
+app.get("/info", async (request, response) => {
   const dateNow = new Date();
+  const fetchedPhonebooks = await getAllPersons();
   const displayData = `<p>Phonebook has info for ${
-    persons.length
+    fetchedPhonebooks.length
   } people</p>${dateNow.toString()}`;
   response.send(displayData);
 });
 
-app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const initialLength = persons.length;
-  persons = persons.filter((person) => person.id !== id);
-  if (persons.length === initialLength) return response.status(404).end();
+app.delete("/api/persons/:id", async (request, response) => {
+  const id = request.params.id;
+  await createDbConnection();
 
-  response.status(204).end();
+  try {
+    const fetchedPhonebook = await Phonebook.findOne({ _id: id })
+      .then((result) => result)
+      .catch((error) => {
+        throw error;
+      });
+    if (fetchedPhonebook) {
+      await Phonebook.deleteOne({ _id: fetchedPhonebook._id }).then(
+        (result) => {
+          mongoose.connection.close();
+          response.status(204).end();
+        }
+      );
+    } else {
+      mongoose.connection.close();
+      response.status(404).end();
+    }
+  } catch (error) {
+    mongoose.connection.close();
+    return response
+      .status(500)
+      .json({ error: `Something wrong happened: ${error.message}` });
+  }
 });
 
-app.post("/api/persons", (request, response) => {
-  console.log(request.body);
+app.post("/api/persons", async (request, response) => {
   const body = request.body;
 
-  const validateData = validateInput(body);
+  const validateData = await validateInput(body);
 
   if (validateData) {
     return response.status(400).json(validateData);
@@ -124,12 +151,19 @@ app.post("/api/persons", (request, response) => {
   const person = {
     name: body.name,
     number: body.number || false,
-    id: Math.floor(Math.random() * 10000001),
   };
+  await createDbConnection();
+  const contact = new Phonebook(person);
+  const addedContact = await contact
+    .save()
+    .then((result) => result)
+    .catch((error) =>
+      response
+        .status(500)
+        .json({ error: `Something wrong happened: ${error.message}` })
+    );
 
-  persons = persons.concat(person);
-
-  response.json(person);
+  response.json(addedContact);
 });
 
 app.use(unknownEndpoint);
