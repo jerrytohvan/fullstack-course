@@ -13,28 +13,27 @@ const url = `mongodb+srv://jerrytohvan:${password}@fullstack-course.o2kvfuo.mong
 mongoose.set("strictQuery", false);
 mongoose.connect(url);
 
-const phonebookSchema = new mongoose.Schema({
+const personSchema = new mongoose.Schema({
   name: String,
   number: String,
 });
 
-const Phonebook = mongoose.model("Phonebook", phonebookSchema);
+const Person = mongoose.model("Person", personSchema);
 
 if (!name || !number) {
-  Phonebook.find({}).then((phonebook) => {
-    console.log("phonebook");
-    phonebook.forEach((contact) => {
+  Person.find({}).then((person) => {
+    person.forEach((contact) => {
       console.log(`${contact.name} ${contact.number}`);
     });
     mongoose.connection.close();
   });
 } else {
-  const phonebook = new Phonebook({
+  const person = new Person({
     name,
     number,
   });
 
-  const newNumber = phonebook.save().then((result) => {
+  const newNumber = person.save().then((result) => {
     console.log(`added ${result.name} number ${result.number} to phonebook`);
     mongoose.connection.close();
     return result;

@@ -12,6 +12,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
@@ -30,12 +32,12 @@ app.use(
 );
 
 const { createDbConnection } = require("./models/client.js");
-const { Phonebook } = require("./models/phonebook.js");
+const { Person } = require("./models/person.js");
 const { default: mongoose } = require("mongoose");
 
 const getAllPersons = async () => {
   await createDbConnection();
-  return Phonebook.find({})
+  return Person.find({})
     .then((result) => result)
     .finally(() => mongoose.connection.close());
 };
@@ -48,13 +50,13 @@ const validateInput = async (data) => {
       };
     }
     await createDbConnection();
-    const fetchExistingPhonebook = await Phonebook.findOne({ name: data.name })
+    const fetchExistingPerson = await Person.findOne({ name: data.name })
       .then((result) => result)
       .catch((error) => {
         throw error;
       })
       .finally(() => mongoose.connection.close());
-    if (fetchExistingPhonebook) {
+    if (fetchExistingPerson) {
       return {
         error: "name must be unique",
       };
@@ -71,7 +73,7 @@ app.get("/api/persons/:id", async (request, response, next) => {
   const id = request.params.id;
   await createDbConnection();
 
-  Phonebook.findById(id)
+  Person.findById(id)
     .then((result) => response.json(result))
     .catch((error) => next(error))
     .finally(() => mongoose.connection.close());
@@ -79,9 +81,9 @@ app.get("/api/persons/:id", async (request, response, next) => {
 
 app.get("/info", async (request, response) => {
   const dateNow = new Date();
-  const fetchedPhonebooks = await getAllPersons();
+  const fetchedPersons = await getAllPersons();
   const displayData = `<p>Phonebook has info for ${
-    fetchedPhonebooks.length
+    fetchedPerson.length
   } people</p>${dateNow.toString()}`;
   response.send(displayData);
 });
@@ -89,7 +91,7 @@ app.get("/info", async (request, response) => {
 app.delete("/api/persons/:id", async (request, response, next) => {
   const id = request.params.id;
   await createDbConnection();
-  Phonebook.findByIdAndDelete(id)
+  Person.findByIdAndDelete(id)
     .then((result) => {
       response.status(204).end();
     })
@@ -106,9 +108,9 @@ app.put("/api/persons/:id", async (request, response, next) => {
     number: body.number || false,
   };
 
-  Phonebook.findByIdAndUpdate(request.params.id, person, { new: true })
-    .then((updatedPhonebook) => {
-      response.json(updatedPhonebook);
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
     })
     .catch((error) => next(error))
     .finally(() => {
@@ -116,7 +118,7 @@ app.put("/api/persons/:id", async (request, response, next) => {
     });
 });
 
-app.post("/api/persons", async (request, response) => {
+app.post("/api/persons", async (request, response, next) => {
   const body = request.body;
 
   const validateData = await validateInput(body);
@@ -130,15 +132,11 @@ app.post("/api/persons", async (request, response) => {
     number: body.number || false,
   };
   await createDbConnection();
-  const contact = new Phonebook(person);
+  const contact = new Person(person);
   const addedContact = await contact
     .save()
     .then((result) => result)
-    .catch((error) =>
-      response
-        .status(500)
-        .json({ error: `Something wrong happened: ${error.message}` })
-    );
+    .catch((error) => next(error));
 
   response.json(addedContact);
 });
@@ -150,3 +148,5 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+//https://fullstackopen.com/osa3/validointi_ja_es_lint#tehtavat-3-19-3-21

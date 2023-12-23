@@ -73,10 +73,14 @@ app.put("/api/notes/:id", async (request, response, next) => {
 
   const note = {
     content,
-    important
+    important,
   };
 
-  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+  Note.findByIdAndUpdate(request.params.id, note, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  })
     .then((updatedNote) => {
       response.json(updatedNote);
     })
