@@ -25,6 +25,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
@@ -67,11 +69,11 @@ app.get("/api/notes", async (request, response) => {
 
 app.put("/api/notes/:id", async (request, response, next) => {
   await createDbConnection();
-  const body = request.body;
+  const { content, important } = request.body;
 
   const note = {
-    content: body.content,
-    important: body.important,
+    content,
+    important
   };
 
   Note.findByIdAndUpdate(request.params.id, note, { new: true })
@@ -116,18 +118,13 @@ app.post("/api/notes", async (request, response, next) => {
   await createDbConnection();
   const body = request.body;
 
-  if (!body.content) {
-    return response.status(400).json({
-      error: "content missing",
-    });
-  }
-
   const note = {
     content: body.content,
-    important: body.important || false
+    important: body.important || false,
   };
+
   const addedNotes = new Note(note);
-  await addedNotes
+  addedNotes
     .save()
     .then((result) => {
       response.json(note);
