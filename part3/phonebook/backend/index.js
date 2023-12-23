@@ -150,5 +150,3 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-// https://fullstackopen.com/osa3/tietojen_tallettaminen_mongo_db_tietokantaan#tehtavat-3-15-3-18
