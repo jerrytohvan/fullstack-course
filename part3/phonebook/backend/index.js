@@ -6,6 +6,17 @@ const app = express();
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static("build"));
@@ -56,26 +67,14 @@ app.get("/api/persons", async (request, response) => {
   return response.json(await getAllPersons());
 });
 
-app.get("/api/persons/:id", async (request, response) => {
+app.get("/api/persons/:id", async (request, response, next) => {
   const id = request.params.id;
-  try {
-    await createDbConnection();
-    const fetchedPhonebook = await Phonebook.findOne({ _id: id })
-      .then((result) => result)
-      .catch((error) => {
-        throw error;
-      })
-      .finally(() => mongoose.connection.close());
-    if (fetchedPhonebook) {
-      response.json(fetchedPhonebook);
-    } else {
-      response.status(404).end();
-    }
-  } catch (error) {
-    return response
-      .status(500)
-      .json({ error: `Something wrong happened: ${error.message}` });
-  }
+  await createDbConnection();
+
+  Phonebook.findById(id)
+    .then((result) => response.json(result))
+    .catch((error) => next(error))
+    .finally(() => mongoose.connection.close());
 });
 
 app.get("/info", async (request, response) => {
@@ -87,33 +86,34 @@ app.get("/info", async (request, response) => {
   response.send(displayData);
 });
 
-app.delete("/api/persons/:id", async (request, response) => {
+app.delete("/api/persons/:id", async (request, response, next) => {
   const id = request.params.id;
   await createDbConnection();
+  Phonebook.findByIdAndDelete(id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error))
+    .finally(() => mongoose.connection.close());
+});
 
-  try {
-    const fetchedPhonebook = await Phonebook.findOne({ _id: id })
-      .then((result) => result)
-      .catch((error) => {
-        throw error;
-      });
-    if (fetchedPhonebook) {
-      await Phonebook.deleteOne({ _id: fetchedPhonebook._id }).then(
-        (result) => {
-          mongoose.connection.close();
-          response.status(204).end();
-        }
-      );
-    } else {
+app.put("/api/persons/:id", async (request, response, next) => {
+  await createDbConnection();
+  const body = request.body;
+
+  const person = {
+    name: body.name,
+    number: body.number || false,
+  };
+
+  Phonebook.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPhonebook) => {
+      response.json(updatedPhonebook);
+    })
+    .catch((error) => next(error))
+    .finally(() => {
       mongoose.connection.close();
-      response.status(404).end();
-    }
-  } catch (error) {
-    mongoose.connection.close();
-    return response
-      .status(500)
-      .json({ error: `Something wrong happened: ${error.message}` });
-  }
+    });
 });
 
 app.post("/api/persons", async (request, response) => {
@@ -144,8 +144,11 @@ app.post("/api/persons", async (request, response) => {
 });
 
 app.use(unknownEndpoint);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// https://fullstackopen.com/osa3/tietojen_tallettaminen_mongo_db_tietokantaan#tehtavat-3-15-3-18

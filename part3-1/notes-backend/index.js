@@ -112,11 +112,6 @@ app.delete("/api/notes/:id", async (request, response, next) => {
     });
 });
 
-const generateId = () => {
-  const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
-  return maxId + 1;
-};
-
 app.post("/api/notes", async (request, response, next) => {
   await createDbConnection();
   const body = request.body;
