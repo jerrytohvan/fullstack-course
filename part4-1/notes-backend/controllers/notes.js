@@ -3,7 +3,8 @@ const { createDbConnection } = require('../utils/dbClient');
 const Note = require('../models/note');
 const mongoose = require('mongoose');
 
-notesRouter.get('/', (request, response) => {
+notesRouter.get('/', async (request, response) => {
+  await createDbConnection();
   Note.find({}).then((notes) => {
     response.json(notes);
   });
