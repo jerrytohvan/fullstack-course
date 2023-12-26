@@ -92,3 +92,12 @@ describe('favorite blogs', () => {
   });
 });
 
+describe('most blogs', () => {
+  test('to return writter with most blogs', () => {
+    const result = listHelper.mostBlogs(moreBlogs);
+    expect(result).toMatchObject({
+      author: 'Robert C. Martin',
+      blogs: 3
+    });
+  });
+});
