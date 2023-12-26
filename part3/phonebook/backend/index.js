@@ -1,18 +1,18 @@
-const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
+const express = require('express');
+const morgan = require('morgan');
+const cors = require('cors');
 const app = express();
 
 const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: "unknown endpoint" });
+  response.status(404).send({ error: 'unknown endpoint' });
 };
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
 
-  if (error.name === "CastError") {
-    return response.status(400).send({ error: "malformatted id" });
-  } else if (error.name === "ValidationError") {
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message });
   }
 
@@ -21,19 +21,19 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("build"));
+app.use(express.static('build'));
 
-morgan.token("body", (req) => {
-  if (req.method === "POST") return JSON.stringify(req.body);
+morgan.token('body', (req) => {
+  if (req.method === 'POST') return JSON.stringify(req.body);
 });
 
 app.use(
-  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+  morgan(':method :url :status :res[content-length] - :response-time ms :body')
 );
 
-const { createDbConnection } = require("./models/client.js");
-const { Person } = require("./models/person.js");
-const { default: mongoose } = require("mongoose");
+const { createDbConnection } = require('./models/client.js');
+const { Person } = require('./models/person.js');
+const { default: mongoose } = require('mongoose');
 
 const getAllPersons = async () => {
   await createDbConnection();
@@ -46,7 +46,7 @@ const validateInput = async (data) => {
   if (data) {
     if (!data.name || !data.number) {
       return {
-        error: "content missing",
+        error: 'content missing',
       };
     }
     await createDbConnection();
@@ -58,18 +58,18 @@ const validateInput = async (data) => {
       .finally(() => mongoose.connection.close());
     if (fetchExistingPerson) {
       return {
-        error: "name must be unique",
+        error: 'name must be unique',
       };
     }
   }
   return null;
 };
 
-app.get("/api/persons", async (request, response) => {
+app.get('/api/persons', async (request, response) => {
   return response.json(await getAllPersons());
 });
 
-app.get("/api/persons/:id", async (request, response, next) => {
+app.get('/api/persons/:id', async (request, response, next) => {
   const id = request.params.id;
   await createDbConnection();
 
@@ -79,27 +79,26 @@ app.get("/api/persons/:id", async (request, response, next) => {
     .finally(() => mongoose.connection.close());
 });
 
-app.get("/info", async (request, response) => {
+app.get('/info', async (request, response) => {
   const dateNow = new Date();
-  const fetchedPersons = await getAllPersons();
   const displayData = `<p>Phonebook has info for ${
-    fetchedPerson.length
+    await getAllPersons().length
   } people</p>${dateNow.toString()}`;
   response.send(displayData);
 });
 
-app.delete("/api/persons/:id", async (request, response, next) => {
+app.delete('/api/persons/:id', async (request, response, next) => {
   const id = request.params.id;
   await createDbConnection();
   Person.findByIdAndDelete(id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((error) => next(error))
     .finally(() => mongoose.connection.close());
 });
 
-app.put("/api/persons/:id", async (request, response, next) => {
+app.put('/api/persons/:id', async (request, response, next) => {
   await createDbConnection();
   const body = request.body;
 
@@ -118,7 +117,7 @@ app.put("/api/persons/:id", async (request, response, next) => {
     });
 });
 
-app.post("/api/persons", async (request, response, next) => {
+app.post('/api/persons', async (request, response, next) => {
   const body = request.body;
 
   const validateData = await validateInput(body);
@@ -148,5 +147,3 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-//https://fullstackopen.com/osa3/validointi_ja_es_lint#tehtavat-3-19-3-21
