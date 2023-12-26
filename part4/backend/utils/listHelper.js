@@ -23,14 +23,6 @@ const favoriteBlog = (blogs) => {
 };
 
 const mostBlogs = (blogs) => {
-  //   Define the function mostBlogs , which receives an array of blogs as a parameter. The function determines the author with the most blogs. The return value of the function also tells the number of blogs of the record blogger:
-
-  // {
-  //   author: "Robert C. Martin",
-  //   blogs: 3
-  // }
-
-  // If there are many record bloggers, it is enough for the function to return one of them.
   const allWriters = [...new Set(blogs.map((blog) => blog.author))];
   const uniqueWriters = allWriters.map((writer) => {
     return { author: writer, blogs: 0 };
