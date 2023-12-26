@@ -38,9 +38,29 @@ const mostBlogs = (blogs) => {
   );
 };
 
+const mostLikes = (blogs) => {
+  const allWriters = [...new Set(blogs.map((blog) => blog.author))];
+  const uniqueWriters = allWriters.map((writer) => {
+    return { author: writer, likes: 0 };
+  });
+
+  uniqueWriters.forEach((writer) => {
+    const totalLikes = blogs.reduce(
+      (sum, blog) => (blog.author === writer.author ? sum + blog.likes : sum),
+      0
+    );
+    writer.likes = totalLikes;
+  });
+
+  return uniqueWriters.reduce((max, writer) =>
+    max.likes > writer.likes ? max : writer
+  );
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 };
