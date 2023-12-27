@@ -24,6 +24,8 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
+// https://fullstackopen.com/en/part4/testing_the_backend#initializing-the-database-before-tests
+
 module.exports = {
   requestLogger,
   unknownEndpoint,

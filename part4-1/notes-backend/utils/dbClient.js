@@ -4,16 +4,17 @@ mongoose.set('strictQuery', false);
 require('dotenv').config();
 
 const config = require('./config');
+const logger = require('./logger');
 
 const createDbConnection = async () => {
   return mongoose
     .connect(config.MONGODB_URI)
     .then((result) => {
-      console.log('connected to MongoDB');
+      logger.info('connected to MongoDB');
       return result;
     })
     .catch((error) => {
-      console.log('error connecting to MongoDB:', error.message);
+      logger.error('error connecting to MongoDB:', error.message);
     });
 };
 

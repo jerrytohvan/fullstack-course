@@ -5,29 +5,24 @@ const mongoose = require('mongoose');
 
 notesRouter.get('/', async (request, response) => {
   await createDbConnection();
-  Note.find({}).then((notes) => {
-    response.json(notes);
-  });
+  const notes = await Note.find({})
+    .finally(() => mongoose.connection.close());
+  response.json(notes);
 });
 
-notesRouter.get('/:id', async (request, response, next) => {
+notesRouter.get('/:id', async (request, response) => {
   await createDbConnection();
-
-  Note.findById(request.params.id)
-    .then((note) => {
-      if (note) {
-        response.json(note);
-      } else {
-        response.status(404).end();
-      }
-    })
-    .catch((error) => next(error))
-    .finally(() => {
-      mongoose.connection.close();
-    });
+  const note = await Note.findById(request.params.id).finally(() =>
+    mongoose.connection.close()
+  );
+  if (note) {
+    response.json(note);
+  } else {
+    response.status(404).end();
+  }
 });
 
-notesRouter.post('/', async (request, response, next) => {
+notesRouter.post('/', async (request, response) => {
   const body = request.body;
   await createDbConnection();
   const note = new Note({
@@ -35,31 +30,21 @@ notesRouter.post('/', async (request, response, next) => {
     important: body.important || false,
   });
 
-  note
+  const savedNote = await note
     .save()
-    .then((savedNote) => {
-      response.json(savedNote);
-    })
-    .catch((error) => next(error))
-    .finally(() => {
-      mongoose.connection.close();
-    });
+    .finally(() => mongoose.connection.close());
+  response.status(201).json(savedNote);
 });
 
-notesRouter.delete('/:id', async (request, response, next) => {
+notesRouter.delete('/:id', async (request, response) => {
   await createDbConnection();
-
-  Note.findByIdAndDelete(request.params.id)
-    .then(() => {
-      response.status(204).end();
-    })
-    .catch((error) => next(error))
-    .finally(() => {
-      mongoose.connection.close();
-    });
+  await Note.findByIdAndDelete(request.params.id).finally(() => {
+    mongoose.connection.close();
+  });
+  response.status(204).end();
 });
 
-notesRouter.put('/:id', async (request, response, next) => {
+notesRouter.put('/:id', async (request, response) => {
   await createDbConnection();
 
   const body = request.body;
@@ -73,7 +58,6 @@ notesRouter.put('/:id', async (request, response, next) => {
     .then((updatedNote) => {
       response.json(updatedNote);
     })
-    .catch((error) => next(error))
     .finally(() => {
       mongoose.connection.close();
     });
