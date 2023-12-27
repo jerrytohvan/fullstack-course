@@ -10,21 +10,30 @@ const { createDbConnection } = require('../utils/dbClient');
 beforeEach(async () => {
   await createDbConnection();
   await Blog.deleteMany({});
-
-  const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
-  const promiseArray = blogObjects.map((blog) => blog.save());
-  await Promise.all(promiseArray);
+  await Blog.insertMany(helper.initialBlogs);
   mongoose.connection.close();
 });
 
-describe('/api/blogs', () => {
+describe('GET /api/blogs', () => {
   test('blog list application returns the correct amount of blog posts in the JSON format', async () => {
     await api
       .get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/);
   });
+});
 
+describe('GET /api/blogs/:id', () => {
+  test('blog contains _id returned as id', async () => {
+    const blogs = await helper.blogsInDb();
+
+    const response = await api.get(`/api/blogs/${blogs[0].id}`);
+
+    expect(response.body.id).toBeDefined();
+  });
+});
+
+describe('POST /api/blogs', () => {
   test('blog is added to database succesfully', async () => {
     await api
       .post('/api/blogs')
@@ -53,22 +62,25 @@ describe('/api/blogs', () => {
       .send({ ...helper.newBlog, title: undefined, url: undefined })
       .expect(400);
 
-
     const blogs = await helper.blogsInDb();
     expect(blogs).toHaveLength(helper.initialBlogs.length);
   });
 });
 
-describe('/api/blogs/:id', () => {
+
+describe('DELETE /api/blogs/:id', () => {
   test('blog contains _id returned as id', async () => {
-    const blogs = await helper.blogsInDb();
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+    await api.delete(`/api/blogs/${blogsAtStart[0].id}`).expect(204);
 
-    const response = await api.get(`/api/blogs/${blogs[0].id}`);
+    const blogsAtEnd = await  helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
 
-    expect(response.body.id).toBeDefined();
+    const titles = blogsAtEnd.map((r) => r.title);
+    expect(titles).not.toContain(blogToDelete.title);
   });
 });
-
 afterEach(async () => {
   await mongoose.connection.close();
 });

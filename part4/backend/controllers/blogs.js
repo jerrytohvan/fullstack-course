@@ -42,4 +42,12 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(newBlog);
 });
 
+blogsRouter.delete('/:id', async (request, response) => {
+  await createDbConnection();
+  await Blog.findByIdAndDelete(request.params.id).finally(() => {
+    mongoose.connection.close();
+  });
+  response.status(204).end();
+});
+
 module.exports = blogsRouter;
