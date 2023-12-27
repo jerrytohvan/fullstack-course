@@ -4,18 +4,13 @@ const { createDbConnection } = require('../utils/dbClient');
 const Blog = require('../models/blog');
 const mongoose = require('mongoose');
 
-blogsRouter.get('/', async (request, response, next) => {
+blogsRouter.get('/', async (request, response) => {
   await createDbConnection();
-  Blog.find({})
-    .then((blogs) => {
-      response.json(blogs);
-    })
-    .catch((error) => {
-      next(error);
-    })
-    .finally(() => {
-      mongoose.connection.close();
-    });
+  const blogs = Blog.find({}).finally(() => {
+    mongoose.connection.close();
+  });
+
+  response.json(blogs);
 });
 
 blogsRouter.post('/', async (request, response, next) => {
