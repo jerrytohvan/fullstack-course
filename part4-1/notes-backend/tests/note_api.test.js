@@ -1,19 +1,29 @@
 const supertest = require('supertest');
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+
 const helper = require('./test_helper');
 const app = require('../app');
 const api = supertest(app);
 
 const Note = require('../models/note');
-const { createDbConnection } = require('../utils/dbClient');
+const User = require('../models/user');
 
 beforeEach(async () => {
-  await createDbConnection();
   await Note.deleteMany({});
   await Note.insertMany(helper.initialNotes);
+
+  await User.deleteMany({});
+
+  const passwordHash = await bcrypt.hash('sekret', 10);
+  const user = new User({ username: 'root', passwordHash });
+
+  await user.save();
 });
 
+
 describe('when there is initially some notes saved', () => {
+
   test('notes are returned as json', async () => {
     await api
       .get('/api/notes')
@@ -65,9 +75,12 @@ describe('viewing a specific note', () => {
 
 describe('addition of a new note', () => {
   test('succeeds with valid data', async () => {
+    const users = await helper.usersInDb();
+
     const newNote = {
       content: 'async/await simplifies making async calls',
       important: true,
+      userId: users[0].id,
     };
 
     await api
@@ -84,8 +97,11 @@ describe('addition of a new note', () => {
   });
 
   test('fails with status code 400 if data invalid', async () => {
+    const users = await helper.usersInDb();
+
     const newNote = {
       important: true,
+      userId: users[0].id,
     };
 
     await api.post('/api/notes').send(newNote).expect(400);

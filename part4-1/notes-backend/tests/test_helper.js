@@ -1,5 +1,5 @@
 const Note = require('../models/note');
-const { createDbConnection } = require('../utils/dbClient');
+const User = require('../models/user');
 
 const initialNotes = [
   {
@@ -13,7 +13,6 @@ const initialNotes = [
 ];
 
 const nonExistingId = async () => {
-  await createDbConnection();
   const note = new Note({ content: 'willremovethissoon' });
   await note.save();
   await note.deleteOne();
@@ -22,11 +21,16 @@ const nonExistingId = async () => {
 };
 
 const notesInDb = async () => {
-  await createDbConnection();
   const notes = await Note.find({});
   return notes.map(note => note.toJSON());
 };
 
+
+const usersInDb = async () => {
+  const users = await User.find({});
+  return users.map(u => u.toJSON());
+};
+
 module.exports = {
-  initialNotes, nonExistingId, notesInDb
+  initialNotes, nonExistingId, notesInDb, usersInDb
 };

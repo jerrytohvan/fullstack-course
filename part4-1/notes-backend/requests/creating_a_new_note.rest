@@ -6,8 +6,9 @@ POST http://localhost:3001/api/notes/
 Content-Type: application/json
 
 {
-    "content": "VS",
-    "important": true
+    "content": "New user note",
+    "important": true,
+    "userId": "658c18a4ded738fbce3adc12"
 }
 
 
