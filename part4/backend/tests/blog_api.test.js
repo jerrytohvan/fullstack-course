@@ -36,14 +36,14 @@ describe('/api/blogs', () => {
     expect(blogs).toHaveLength(helper.initialBlogs.length + 1);
   });
 
-  test('blog is not added to database when likes is missing', async () => {
+  test('blog post like is default to 1 if likes param is missing', async () => {
     await api
       .post('/api/blogs')
       .send({ ...helper.newBlog, likes: undefined })
-      .expect(400);
+      .expect(201).expect('Content-Type', /application\/json/);
 
     const blogs = await helper.blogsInDb();
-    expect(blogs).toHaveLength(helper.initialBlogs.length);
+    expect(blogs).toHaveLength(helper.initialBlogs.length + 1);
   });
 });
 
