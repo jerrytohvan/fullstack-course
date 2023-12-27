@@ -24,6 +24,17 @@ describe('/api/blogs', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/);
   });
+
+  test('blog is added to database succesfully', async () => {
+    await api
+      .post('/api/blogs')
+      .send(helper.newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogs = await helper.blogsInDb();
+    expect(blogs).toHaveLength(helper.initialBlogs.length + 1);
+  });
 });
 
 describe('/api/blogs/:id', () => {

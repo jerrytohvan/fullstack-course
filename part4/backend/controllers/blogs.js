@@ -25,7 +25,7 @@ blogsRouter.get('/:id', async (request, response) => {
   response.status(404).end();
 });
 
-blogsRouter.post('/', async (request, response, next) => {
+blogsRouter.post('/', async (request, response) => {
   await createDbConnection();
   const body = request.body;
   const newBlog = new Blog({
@@ -34,17 +34,12 @@ blogsRouter.post('/', async (request, response, next) => {
     url: body.url,
     likes: body.likes,
   });
-  newBlog
+  await newBlog
     .save()
-    .then((savedBlog) => {
-      response.json(savedBlog);
-    })
-    .catch((error) => {
-      next(error);
-    })
     .finally(() => {
       mongoose.connection.close();
     });
+  response.status(201).json(newBlog);
 });
 
 module.exports = blogsRouter;

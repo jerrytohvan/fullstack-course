@@ -40,6 +40,15 @@ const initialBlogs = [
   },
 ];
 
+const newBlog = [
+  {
+    title: 'New blog',
+    author: 'John Doe',
+    url: 'https://reactpatterns.com/',
+    likes: 2,
+  }
+];
+
 
 const nonExistingId = async () => {
   await createDbConnection();
@@ -57,5 +66,5 @@ const blogsInDb = async () => {
 };
 
 module.exports = {
-  initialBlogs, nonExistingId, blogsInDb
+  initialBlogs, nonExistingId, blogsInDb, newBlog
 };
