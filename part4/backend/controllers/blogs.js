@@ -6,11 +6,23 @@ const mongoose = require('mongoose');
 
 blogsRouter.get('/', async (request, response) => {
   await createDbConnection();
-  const blogs = Blog.find({}).finally(() => {
+  const blogs = await  Blog.find({}).finally(() => {
     mongoose.connection.close();
   });
 
   response.json(blogs);
+});
+
+blogsRouter.get('/:id', async (request, response) => {
+  await createDbConnection();
+  const blogs = await Blog.findById(request.params.id).finally(() => {
+    mongoose.connection.close();
+  });
+
+  if(blogs){
+    response.json(blogs);
+  }
+  response.status(404).end();
 });
 
 blogsRouter.post('/', async (request, response, next) => {

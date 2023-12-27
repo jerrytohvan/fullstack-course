@@ -10,9 +10,11 @@ const { createDbConnection } = require('../utils/dbClient');
 beforeEach(async () => {
   await createDbConnection();
   await Blog.deleteMany({});
+
   const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
   const promiseArray = blogObjects.map((blog) => blog.save());
   await Promise.all(promiseArray);
+  mongoose.connection.close();
 });
 
 describe('/api/blogs', () => {
@@ -24,4 +26,16 @@ describe('/api/blogs', () => {
   });
 });
 
-afterEach(() => mongoose.connection.close());
+describe('/api/blogs/:id', () => {
+  test('blog contains _id returned as id', async () => {
+    const blogs = await helper.blogsInDb();
+
+    const response = await api.get(`/api/blogs/${blogs[0].id}`);
+
+    expect(response.body.id).toBeDefined();
+  });
+});
+
+afterEach(async () => {
+  await mongoose.connection.close();
+});
