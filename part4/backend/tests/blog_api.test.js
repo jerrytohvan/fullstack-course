@@ -40,10 +40,22 @@ describe('/api/blogs', () => {
     await api
       .post('/api/blogs')
       .send({ ...helper.newBlog, likes: undefined })
-      .expect(201).expect('Content-Type', /application\/json/);
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
 
     const blogs = await helper.blogsInDb();
     expect(blogs).toHaveLength(helper.initialBlogs.length + 1);
+  });
+
+  test('blog wont be added if title and url is missing', async () => {
+    await api
+      .post('/api/blogs')
+      .send({ ...helper.newBlog, title: undefined, url: undefined })
+      .expect(400);
+
+
+    const blogs = await helper.blogsInDb();
+    expect(blogs).toHaveLength(helper.initialBlogs.length);
   });
 });
 

@@ -40,15 +40,12 @@ const initialBlogs = [
   },
 ];
 
-const newBlog = [
-  {
-    title: 'New blog',
-    author: 'John Doe',
-    url: 'https://reactpatterns.com/',
-    likes: 2,
-  }
-];
-
+const newBlog = {
+  title: 'New blog',
+  author: 'John Doe',
+  url: 'https://reactpatterns.com/',
+  likes: 2,
+};
 
 const nonExistingId = async () => {
   await createDbConnection();
@@ -62,9 +59,12 @@ const nonExistingId = async () => {
 const blogsInDb = async () => {
   await createDbConnection();
   const blogs = await Blog.find({});
-  return blogs.map(blog => blog.toJSON());
+  return blogs.map((blog) => blog.toJSON());
 };
 
 module.exports = {
-  initialBlogs, nonExistingId, blogsInDb, newBlog
+  initialBlogs,
+  nonExistingId,
+  blogsInDb,
+  newBlog,
 };
