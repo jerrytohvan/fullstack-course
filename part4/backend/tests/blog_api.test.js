@@ -35,6 +35,16 @@ describe('/api/blogs', () => {
     const blogs = await helper.blogsInDb();
     expect(blogs).toHaveLength(helper.initialBlogs.length + 1);
   });
+
+  test('blog is not added to database when likes is missing', async () => {
+    await api
+      .post('/api/blogs')
+      .send({ ...helper.newBlog, likes: undefined })
+      .expect(400);
+
+    const blogs = await helper.blogsInDb();
+    expect(blogs).toHaveLength(helper.initialBlogs.length);
+  });
 });
 
 describe('/api/blogs/:id', () => {
