@@ -50,4 +50,14 @@ blogsRouter.delete('/:id', async (request, response) => {
   response.status(204).end();
 });
 
+blogsRouter.put('/:id', async (request, response) => {
+  await createDbConnection();
+  const body = request.body;
+  const blog = {
+    likes: body.likes || 0,
+  };
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true }).finally(() => mongoose.connection.close());
+  response.json(updatedBlog);
+});
+
 module.exports = blogsRouter;

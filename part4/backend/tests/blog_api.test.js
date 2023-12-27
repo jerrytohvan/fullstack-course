@@ -67,20 +67,31 @@ describe('POST /api/blogs', () => {
   });
 });
 
-
 describe('DELETE /api/blogs/:id', () => {
-  test('blog contains _id returned as id', async () => {
+  test('succesfully deleted existing blog', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
-    await api.delete(`/api/blogs/${blogsAtStart[0].id}`).expect(204);
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
 
-    const blogsAtEnd = await  helper.blogsInDb();
+    const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
 
     const titles = blogsAtEnd.map((r) => r.title);
     expect(titles).not.toContain(blogToDelete.title);
   });
 });
+
+describe('PUT /api/blogs/:id', () => {
+  test('succesfully update likes of an existing blog', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+    const updatedBlog = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send({ likes: blogToUpdate.likes + 1 });
+    expect(updatedBlog.body.likes).toBe(blogToUpdate.likes + 1);
+  });
+});
+
 afterEach(async () => {
   await mongoose.connection.close();
 });
