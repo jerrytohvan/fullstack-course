@@ -26,9 +26,11 @@ mongoose.connect(config.MONGODB_URI).then((result) => {
 
 app.use(middleware.requestLogger);
 app.use(middleware.tokenExtractor);
+// EXAMPLE MIDDLEWARE APPLICATION ALL ROUTE: app.use(middleware.userExtractor);
 
 app.use('/api/login', loginRouter);
 app.use('/api/users', usersRouter);
+// EXAMPLE MIDDLEWARE APPLICATION SPECIFIC ROUTE: app.use('/api/blogs', middleware.userExtractor, blogsRouter);
 app.use('/api/blogs', blogsRouter);
 
 app.use(middleware.unknownEndpoint);
