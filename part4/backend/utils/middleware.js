@@ -1,5 +1,9 @@
 const logger = require('./logger');
 
+const CUSTOM_ERROR_MESSAGES = [
+  'Password is missing', 'Password must be at least 3 characters'
+];
+
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method);
   logger.info('Path:  ', request.path);
@@ -25,9 +29,9 @@ const errorHandler = (error, request, response, next) => {
     return response.status(401).json({
       error: 'token expired',
     });
-  } else if (error.message === 'Password is missing') {
+  } else if (error.name === 'Error' && CUSTOM_ERROR_MESSAGES.includes(error.message)) {
     return response.status(400).json({
-      error: 'Password is missing',
+      error: error.message,
     });
   }
 
