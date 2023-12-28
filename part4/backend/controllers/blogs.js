@@ -1,23 +1,15 @@
 const blogsRouter = require('express').Router();
 
-const { createDbConnection } = require('../utils/dbClient');
 const Blog = require('../models/blog');
-const mongoose = require('mongoose');
 
 blogsRouter.get('/', async (request, response) => {
-  await createDbConnection();
-  const blogs = await  Blog.find({}).finally(() => {
-    mongoose.connection.close();
-  });
+  const blogs = await  Blog.find({});
 
   response.json(blogs);
 });
 
 blogsRouter.get('/:id', async (request, response) => {
-  await createDbConnection();
-  const blogs = await Blog.findById(request.params.id).finally(() => {
-    mongoose.connection.close();
-  });
+  const blogs = await Blog.findById(request.params.id);
 
   if(blogs){
     response.json(blogs);
@@ -26,7 +18,6 @@ blogsRouter.get('/:id', async (request, response) => {
 });
 
 blogsRouter.post('/', async (request, response) => {
-  await createDbConnection();
   const body = request.body;
   const newBlog = new Blog({
     title: body.title,
@@ -35,28 +26,21 @@ blogsRouter.post('/', async (request, response) => {
     likes: body.likes || 0,
   });
   await newBlog
-    .save()
-    .finally(() => {
-      mongoose.connection.close();
-    });
+    .save();
   response.status(201).json(newBlog);
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
-  await createDbConnection();
-  await Blog.findByIdAndDelete(request.params.id).finally(() => {
-    mongoose.connection.close();
-  });
+  await Blog.findByIdAndDelete(request.params.id);
   response.status(204).end();
 });
 
 blogsRouter.put('/:id', async (request, response) => {
-  await createDbConnection();
   const body = request.body;
   const blog = {
     likes: body.likes || 0,
   };
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true }).finally(() => mongoose.connection.close());
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true });
   response.json(updatedBlog);
 });
 

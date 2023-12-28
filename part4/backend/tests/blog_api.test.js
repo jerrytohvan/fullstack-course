@@ -5,13 +5,10 @@ const helper = require('./test_helper');
 
 const api = supertest(app);
 const Blog = require('../models/blog');
-const { createDbConnection } = require('../utils/dbClient');
 
 beforeEach(async () => {
-  await createDbConnection();
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
-  mongoose.connection.close();
 });
 
 describe('GET /api/blogs', () => {
@@ -92,6 +89,6 @@ describe('PUT /api/blogs/:id', () => {
   });
 });
 
-afterEach(async () => {
+afterAll(async () => {
   await mongoose.connection.close();
 });

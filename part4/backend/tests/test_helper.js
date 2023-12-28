@@ -1,5 +1,4 @@
 const Blog = require('../models/blog');
-const { createDbConnection } = require('../utils/dbClient');
 
 const initialBlogs = [
   {
@@ -48,16 +47,12 @@ const newBlog = {
 };
 
 const nonExistingId = async () => {
-  await createDbConnection();
   const blog = new Blog({ title: 'willremovethissoon' });
   await blog.save();
   await blog.deleteOne();
-
-  return blog._id.toString();
 };
 
 const blogsInDb = async () => {
-  await createDbConnection();
   const blogs = await Blog.find({});
   return blogs.map((blog) => blog.toJSON());
 };
