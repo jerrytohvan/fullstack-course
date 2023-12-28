@@ -6,12 +6,20 @@ const helper = require('./test_helper');
 const api = supertest(app);
 const Blog = require('../models/blog');
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
   await User.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
-  await User.insertMany(helper.initialUser);
+
+  const mockUser = helper.initialUser[0];
+  await User.insertMany([
+    {
+      ...mockUser,
+      passwordHash: await bcrypt.hash(mockUser.password, 10),
+    },
+  ]);
 });
 
 describe('GET /api/blogs', () => {
@@ -35,10 +43,17 @@ describe('GET /api/blogs/:id', () => {
 
 describe('POST /api/blogs', () => {
   test('blog is added to database succesfully', async () => {
-    const getUserFromDb = await helper.usersInDb();
+    const loginToken = await api
+      .post('/api/login')
+      .send({
+        username: helper.initialUser[0].username,
+        password: helper.initialUser[0].password,
+      });
+
     await api
       .post('/api/blogs')
-      .send({ ...helper.newBlog,  userId: getUserFromDb[0].id})
+      .set('Authorization', `Bearer ${loginToken.body.token}`)
+      .send(helper.newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -47,11 +62,21 @@ describe('POST /api/blogs', () => {
   });
 
   test('blog post like is default to 1 if likes param is missing', async () => {
-    const getUserFromDb = await helper.usersInDb();
+    const loginToken = await api
+      .post('/api/login')
+      .send({
+        username: helper.initialUser[0].username,
+        password: helper.initialUser[0].password,
+      });
+
 
     await api
       .post('/api/blogs')
-      .send({ ...helper.newBlog, userId: getUserFromDb[0].id, likes: undefined })
+      .set('Authorization', `Bearer ${loginToken.body.token}`)
+      .send({
+        ...helper.newBlog,
+        likes: undefined,
+      })
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -60,11 +85,21 @@ describe('POST /api/blogs', () => {
   });
 
   test('blog wont be added if title and url is missing', async () => {
-    const getUserFromDb = await helper.usersInDb();
+    const loginToken = await api
+      .post('/api/login')
+      .send({
+        username: helper.initialUser[0].username,
+        password: helper.initialUser[0].password,
+      });
 
     await api
       .post('/api/blogs')
-      .send({ ...helper.newBlog,  userId: getUserFromDb[0].id, title: undefined, url: undefined })
+      .set('Authorization', `Bearer ${loginToken.body.token}`)
+      .send({
+        ...helper.newBlog,
+        title: undefined,
+        url: undefined,
+      })
       .expect(400);
 
     const blogs = await helper.blogsInDb();

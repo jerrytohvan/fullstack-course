@@ -41,9 +41,9 @@ const initialBlogs = [
 ];
 const initialUser = [
   {
-    admin: 'testadmin',
+    name: 'testadmin',
     username: 'testuser',
-    password: 'testpassword',
+    password: 'password'
   },
 ];
 

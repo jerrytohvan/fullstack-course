@@ -5,13 +5,13 @@ GET http://localhost:3001/api/blogs/
 ###
 POST http://localhost:3001/api/blogs/ HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImplcnJ5IiwiaWQiOiI2NThkMmVkYzYzOGFhZjI0MjU0MmU0MjMiLCJpYXQiOjE3MDM3NTIzMjIsImV4cCI6MTcwMzc1NTkyMn0.CFh1fpNe1PFSR0muRhMr0F4xb85DV7KQVxU19JtbTjA 
 
 {
   "title": "new admin blog",
   "author": "jerry tohvan",
   "url": "https://www.google.com",
-  "likes": 20,
-  "userId": "658c18a4ded738fbce3adc12"
+  "likes": 20
 }
 
 ###
