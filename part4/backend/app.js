@@ -25,7 +25,8 @@ mongoose.connect(config.MONGODB_URI).then((result) => {
 });
 
 app.use(middleware.requestLogger);
-app.use(middleware.tokenExtractor); // https://fullstackopen.com/en/part4/token_authentication#exercises-4-15-4-23
+app.use(middleware.tokenExtractor);
+
 app.use('/api/login', loginRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/blogs', blogsRouter);

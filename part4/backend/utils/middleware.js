@@ -1,4 +1,8 @@
 const logger = require('./logger');
+const config = require('./config');
+
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 
 const CUSTOM_ERROR_MESSAGES = [
   'Password is missing',
@@ -50,9 +54,22 @@ const tokenExtractor = (request, response, next) => {
   next();
 };
 
+const userExtractor = async (request, response, next) => {
+  const { token } = request.body;
+  const decodedUser = jwt.verify(token, config.SECRET);
+  if (!decodedUser.id) {
+    return response.status(401).json({ error: 'token invalid' });
+  }
+  const user = await User.findById(decodedUser.id);
+  request.user = user;
+  next();
+};
+
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
   tokenExtractor,
+  userExtractor
 };
