@@ -1,7 +1,8 @@
 const logger = require('./logger');
 
 const CUSTOM_ERROR_MESSAGES = [
-  'Password is missing', 'Password must be at least 3 characters'
+  'Password is missing',
+  'Password must be at least 3 characters',
 ];
 
 const requestLogger = (request, response, next) => {
@@ -29,7 +30,10 @@ const errorHandler = (error, request, response, next) => {
     return response.status(401).json({
       error: 'token expired',
     });
-  } else if (error.name === 'Error' && CUSTOM_ERROR_MESSAGES.includes(error.message)) {
+  } else if (
+    error.name === 'Error' &&
+    CUSTOM_ERROR_MESSAGES.includes(error.message)
+  ) {
     return response.status(400).json({
       error: error.message,
     });
@@ -38,8 +42,17 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.startsWith('Bearer ')) {
+    request.body.token = authorization.replace('Bearer ', '');
+  }
+  next();
+};
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
+  tokenExtractor,
 };
