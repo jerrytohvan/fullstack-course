@@ -28,7 +28,7 @@ describe('POST /api/user', () => {
     const newUserObject = {
       username: 'testunique',
       password: 'unique',
-      name: 'unique',
+      name: 'unique'
     };
     await api.post('/api/users').send(newUserObject).expect(201);
 

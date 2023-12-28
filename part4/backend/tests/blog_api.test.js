@@ -5,10 +5,13 @@ const helper = require('./test_helper');
 
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
+  await User.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
+  await User.insertMany(helper.initialUser);
 });
 
 describe('GET /api/blogs', () => {
@@ -32,9 +35,10 @@ describe('GET /api/blogs/:id', () => {
 
 describe('POST /api/blogs', () => {
   test('blog is added to database succesfully', async () => {
+    const getUserFromDb = await helper.usersInDb();
     await api
       .post('/api/blogs')
-      .send(helper.newBlog)
+      .send({ ...helper.newBlog,  userId: getUserFromDb[0].id})
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -43,9 +47,11 @@ describe('POST /api/blogs', () => {
   });
 
   test('blog post like is default to 1 if likes param is missing', async () => {
+    const getUserFromDb = await helper.usersInDb();
+
     await api
       .post('/api/blogs')
-      .send({ ...helper.newBlog, likes: undefined })
+      .send({ ...helper.newBlog, userId: getUserFromDb[0].id, likes: undefined })
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -54,9 +60,11 @@ describe('POST /api/blogs', () => {
   });
 
   test('blog wont be added if title and url is missing', async () => {
+    const getUserFromDb = await helper.usersInDb();
+
     await api
       .post('/api/blogs')
-      .send({ ...helper.newBlog, title: undefined, url: undefined })
+      .send({ ...helper.newBlog,  userId: getUserFromDb[0].id, title: undefined, url: undefined })
       .expect(400);
 
     const blogs = await helper.blogsInDb();

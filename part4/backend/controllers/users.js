@@ -4,16 +4,17 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 
 userRouter.post('/', async (request, response) => {
-  const body = request.body;
-  if(!body.password) throw new Error('Password is missing');
-  if(body.password.length < 3) throw new Error('Password must be at least 3 characters');
+  const { username, password, name } = request.body;
+  if(!password) throw new Error('Password is missing');
+  if(password.length < 3) throw new Error('Password must be at least 3 characters');
 
   const saltRounds = 10;
-  const passwordHash = bcrypt.hash(body.password, saltRounds);
+  const passwordHash = await bcrypt.hash(password, saltRounds);
+
   const newUser = new User({
-    username: body.username,
-    password: passwordHash,
-    name: body.name
+    username,
+    name,
+    passwordHash
   });
   await newUser
     .save();
