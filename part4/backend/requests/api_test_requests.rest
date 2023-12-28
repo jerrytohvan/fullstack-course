@@ -7,10 +7,11 @@ POST http://localhost:3001/api/blogs/ HTTP/1.1
 Content-Type: application/json
 
 {
-  "title": "new blog",
+  "title": "new admin blog",
   "author": "jerry tohvan",
   "url": "https://www.google.com",
-  "likes": 2
+  "likes": 20,
+  "userId": "658c18a4ded738fbce3adc12"
 }
 
 ###
