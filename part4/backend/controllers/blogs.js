@@ -7,6 +7,13 @@ const jwt = require('jsonwebtoken');
 
 const config = require('../utils/config');
 
+const getDecodedUserFromToken = (token) => {
+  const decodedUser = jwt.verify(token, config.SECRET);
+  if (!decodedUser.id) {
+    return false;
+  }
+  return decodedUser;
+};
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
@@ -25,9 +32,8 @@ blogsRouter.get('/:id', async (request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
   const { title, author, url, likes = 0, token } = request.body;
-  console.log('token ', token);
-  const decodedUser = jwt.verify(token, config.SECRET);
-  if (!decodedUser.id) {
+  const decodedUser = getDecodedUserFromToken(token);
+  if (!decodedUser) {
     return response.status(401).json({ error: 'token invalid' });
   }
 
@@ -49,7 +55,24 @@ blogsRouter.post('/', async (request, response) => {
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndDelete(request.params.id);
+  const { id } = request.params;
+  const { token } = request.body;
+
+  const decodedUser = getDecodedUserFromToken(token);
+  if (!decodedUser) {
+    return response.status(401).json({ error: 'token invalid' });
+  }
+
+  const blog = await Blog.findById(id);
+
+  if (!blog) {
+    return response.status(404).json({ error: 'blog not found' });
+  }
+
+  if (`${blog.user}` !== decodedUser.id) {
+    return response.status(401).json({ error: 'access limited to delete blog' });
+  }
+  await Blog.findByIdAndDelete(id);
   response.status(204).end();
 });
 

@@ -11,15 +11,14 @@ const bcrypt = require('bcrypt');
 beforeEach(async () => {
   await Blog.deleteMany({});
   await User.deleteMany({});
-  await Blog.insertMany(helper.initialBlogs);
 
   const mockUser = helper.initialUser[0];
-  await User.insertMany([
-    {
-      ...mockUser,
-      passwordHash: await bcrypt.hash(mockUser.password, 10),
-    },
-  ]);
+  const user = new User({
+    ...mockUser,
+    passwordHash: await bcrypt.hash(mockUser.password, 10),
+  });
+  await user.save();
+  await Blog.insertMany(helper.initialBlogs.map((blog) => ({ ...blog, user: user.id })));
 });
 
 describe('GET /api/blogs', () => {
@@ -43,12 +42,10 @@ describe('GET /api/blogs/:id', () => {
 
 describe('POST /api/blogs', () => {
   test('blog is added to database succesfully', async () => {
-    const loginToken = await api
-      .post('/api/login')
-      .send({
-        username: helper.initialUser[0].username,
-        password: helper.initialUser[0].password,
-      });
+    const loginToken = await api.post('/api/login').send({
+      username: helper.initialUser[0].username,
+      password: helper.initialUser[0].password,
+    });
 
     await api
       .post('/api/blogs')
@@ -62,13 +59,10 @@ describe('POST /api/blogs', () => {
   });
 
   test('blog post like is default to 1 if likes param is missing', async () => {
-    const loginToken = await api
-      .post('/api/login')
-      .send({
-        username: helper.initialUser[0].username,
-        password: helper.initialUser[0].password,
-      });
-
+    const loginToken = await api.post('/api/login').send({
+      username: helper.initialUser[0].username,
+      password: helper.initialUser[0].password,
+    });
 
     await api
       .post('/api/blogs')
@@ -85,12 +79,10 @@ describe('POST /api/blogs', () => {
   });
 
   test('blog wont be added if title and url is missing', async () => {
-    const loginToken = await api
-      .post('/api/login')
-      .send({
-        username: helper.initialUser[0].username,
-        password: helper.initialUser[0].password,
-      });
+    const loginToken = await api.post('/api/login').send({
+      username: helper.initialUser[0].username,
+      password: helper.initialUser[0].password,
+    });
 
     await api
       .post('/api/blogs')
@@ -111,7 +103,15 @@ describe('DELETE /api/blogs/:id', () => {
   test('succesfully deleted existing blog', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    const loginToken = await api.post('/api/login').send({
+      username: helper.initialUser[0].username,
+      password: helper.initialUser[0].password,
+    });
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${loginToken.body.token}`)
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
