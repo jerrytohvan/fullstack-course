@@ -3,7 +3,6 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
-
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -36,7 +35,6 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch (exception) {
-      console.log(exception)
       setErrorMessage(exception.response.data.error);
       setTimeout(() => {
         setErrorMessage(null);
@@ -91,20 +89,19 @@ const App = () => {
   const blogContents = () => (
     <>
       <h2>blogs</h2>
-      <>{`${user.name} logged in`}</>
-      <br/><br/>
+      <>
+        {`${user.name} logged in`}
+        {logoutButton()}
+      </>
+      <br />
+      <br />
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
     </>
   );
 
-  return (
-    <>
-      {!user ? loginForm() : blogContents()}
-      {user && logoutButton()}
-    </>
-  );
+  return <>{!user ? loginForm() : blogContents()}</>;
 };
 
 export default App;
