@@ -14,10 +14,16 @@ const NewBlogForm = ({ handleNewBlog }) => {
     });
   }, [draftBlog]);
 
+  const createNewBlog = (event) => {
+    event.preventDefault()
+    handleNewBlog(draftBlog);
+    setDraftBlog({});
+  }
+
   return (
     <>
       <h2>create new</h2>
-      <form onSubmit={handleNewBlog}>
+      <form onSubmit={createNewBlog}>
         <div>
           title
           <input

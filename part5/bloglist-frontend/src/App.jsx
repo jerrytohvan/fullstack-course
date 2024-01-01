@@ -67,6 +67,7 @@ const App = () => {
       setSuccessNotification(
         `a new blog ${blog.title} by ${blog.author} added`
       );
+      setBlogs(blogs.concat(newBlog));
       setTimeout(() => {
         setSuccessNotification(null);
       }, 5000);
@@ -106,7 +107,7 @@ const App = () => {
   );
 
   const createBlogForm = () => (
-    <Togglable buttonLabel="new blog" ref={newBlogRef}>
+    <Togglable buttonLabel="create new blog" ref={newBlogRef}>
       <NewBlogForm handleNewBlog={handleNewBlog} />
     </Togglable>
   );

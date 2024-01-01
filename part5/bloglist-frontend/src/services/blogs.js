@@ -23,7 +23,6 @@ const setToken = (newToken) => {
     return;
   }
   token = `Bearer ${newToken}`;
-  console.log(token);
 };
 
 export default { getAll, createNewBlog, setToken };
