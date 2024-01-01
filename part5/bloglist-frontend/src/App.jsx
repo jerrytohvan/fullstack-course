@@ -125,10 +125,13 @@ const App = () => {
         {`${user.name} logged in`}
         {logoutButton()}
       </>
-      {createBlogForm()}{" "}
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      {createBlogForm()}
+      <br />
+      <>
+        {blogs.map((blog) => (
+          <Blog key={blog.id} blog={blog} />
+        ))}
+      </>
     </>
   );
 

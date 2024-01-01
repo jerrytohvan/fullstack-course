@@ -7,6 +7,7 @@ const Togglable = forwardRef((props, refs) => {
     setVisible(!visible)
   }
 
+  //   useEffect(() => setVisible(false), [])
   useImperativeHandle(refs, () => {
     return {
       toggleVisibility,
@@ -22,7 +23,7 @@ const Togglable = forwardRef((props, refs) => {
         </>
       ) : (
         <>
-          <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+          <button onClick={toggleVisibility}>{props.buttonLabel}</button>{' '}
         </>
       )}
     </>
