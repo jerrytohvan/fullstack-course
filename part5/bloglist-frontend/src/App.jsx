@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
+import NewBlogForm from "./components/NewBlogForm";
+
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-
+import Togglable from "./components/Toggable";
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -10,11 +12,12 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [draftBlog, setDraftBlog] = useState({});
+
+  const newBlogRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, [draftBlog]);
+  }, []);
 
   useEffect(() => {
     const loggedInUser = window.localStorage.getItem("loggedBlogUser");
@@ -24,17 +27,6 @@ const App = () => {
       blogService.setToken(userSession.token);
     }
   }, []);
-
-  // cleans up empty values in draftBlog
-  useEffect(() => {
-    const objectKeys = Object.keys(draftBlog);
-    objectKeys.map((key) => {
-      if (draftBlog[key] === "") {
-        delete draftBlog[key];
-        setDraftBlog({ ...draftBlog });
-      }
-    });
-  }, [draftBlog]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -68,16 +60,12 @@ const App = () => {
     setPassword("");
   };
 
-  const handleNewBlog = async (event) => {
-    event.preventDefault();
-
+  const handleNewBlog = async (blog) => {
     try {
-      const user = await blogService.createNewBlog(draftBlog);
-      if (user) {
-        setDraftBlog({});
-      }
+      const newBlog = await blogService.createNewBlog(blog);
+      newBlogRef.current.toggleVisibility();
       setSuccessNotification(
-        `a new blog ${draftBlog.title} by ${draftBlog.author} added`
+        `a new blog ${blog.title} by ${blog.author} added`
       );
       setTimeout(() => {
         setSuccessNotification(null);
@@ -118,45 +106,9 @@ const App = () => {
   );
 
   const createBlogForm = () => (
-    <>
-      <h2>create new</h2>
-      <form onSubmit={handleNewBlog}>
-        <div>
-          title
-          <input
-            type="text"
-            value={draftBlog.title || ""}
-            name="title"
-            onChange={({ target }) =>
-              setDraftBlog({ ...draftBlog, title: target.value })
-            }
-          />
-        </div>
-        <div>
-          author
-          <input
-            type="text"
-            value={draftBlog.author || ""}
-            name="author"
-            onChange={({ target }) =>
-              setDraftBlog({ ...draftBlog, author: target.value })
-            }
-          />
-        </div>
-        <div>
-          url
-          <input
-            type="text"
-            value={draftBlog.url || ""}
-            name="url"
-            onChange={({ target }) =>
-              setDraftBlog({ ...draftBlog, url: target.value })
-            }
-          />
-        </div>
-        <button type="submit">create</button>
-      </form>
-    </>
+    <Togglable buttonLabel="new blog" ref={newBlogRef}>
+      <NewBlogForm handleNewBlog={handleNewBlog} />
+    </Togglable>
   );
 
   const logoutButton = () => (
