@@ -1,34 +1,35 @@
-import { useState } from "react";
+import { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const blogStyle = {
   paddingTop: 10,
   paddingLeft: 2,
-  border: "solid",
+  border: 'solid',
   borderWidth: 1,
   marginBottom: 5,
-};
+}
 
 const confirmDeleteBlog = (handleDeleteBlog, blog) => {
   if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-    handleDeleteBlog(blog);
+    handleDeleteBlog(blog)
   }
-};
+}
 
 const Blog = ({ blog, handleLikeBlog, handleDeleteBlog }) => {
-  const [blogExpanded, setBlogExpanded] = useState(false);
+  const [blogExpanded, setBlogExpanded] = useState(false)
 
-  const toggleVisibility = () => setBlogExpanded(!blogExpanded);
+  const toggleVisibility = () => setBlogExpanded(!blogExpanded)
 
   const showBlogList = () => {
     if (!blogExpanded) {
-      return <button onClick={toggleVisibility}>view</button>;
+      return <button onClick={toggleVisibility}>view</button>
     } else {
       return (
         <>
           <button onClick={toggleVisibility}>hide</button>
           <p>{blog.url}</p>
           <p>
-            likes {blog.likes}{" "}
+            likes {blog.likes}{' '}
             <button onClick={() => handleLikeBlog(blog)}>like</button>
           </p>
           {blog.user.name}
@@ -37,9 +38,9 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog }) => {
             remove
           </button>
         </>
-      );
+      )
     }
-  };
+  }
 
   return (
     <div style={blogStyle}>
@@ -47,7 +48,14 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog }) => {
       {showBlogList()}
       <br />
     </div>
-  );
-};
+  )
+}
 
-export default Blog;
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  handleLikeBlog: PropTypes.func.isRequired,
+  handleDeleteBlog: PropTypes.func.isRequired
+}
+
+
+export default Blog

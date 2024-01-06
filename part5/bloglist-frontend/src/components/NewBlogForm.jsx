@@ -1,23 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 
 const NewBlogForm = ({ handleNewBlog }) => {
-  const [draftBlog, setDraftBlog] = useState({});
-  
+  const [draftBlog, setDraftBlog] = useState({})
+
   // cleans up empty values in draftBlog
   useEffect(() => {
-    const objectKeys = Object.keys(draftBlog);
+    const objectKeys = Object.keys(draftBlog)
     objectKeys.map((key) => {
-      if (draftBlog[key] === "") {
-        delete draftBlog[key];
-        setDraftBlog({ ...draftBlog });
+      if (draftBlog[key] === '') {
+        delete draftBlog[key]
+        setDraftBlog({ ...draftBlog })
       }
-    });
-  }, [draftBlog]);
+    })
+  }, [draftBlog])
 
   const createNewBlog = (event) => {
     event.preventDefault()
-    handleNewBlog(draftBlog);
-    setDraftBlog({});
+    handleNewBlog(draftBlog)
+    setDraftBlog({})
   }
 
   return (
@@ -28,7 +29,7 @@ const NewBlogForm = ({ handleNewBlog }) => {
           title
           <input
             type="text"
-            value={draftBlog.title || ""}
+            value={draftBlog.title || ''}
             name="title"
             onChange={({ target }) =>
               setDraftBlog({ ...draftBlog, title: target.value })
@@ -39,7 +40,7 @@ const NewBlogForm = ({ handleNewBlog }) => {
           author
           <input
             type="text"
-            value={draftBlog.author || ""}
+            value={draftBlog.author || ''}
             name="author"
             onChange={({ target }) =>
               setDraftBlog({ ...draftBlog, author: target.value })
@@ -50,7 +51,7 @@ const NewBlogForm = ({ handleNewBlog }) => {
           url
           <input
             type="text"
-            value={draftBlog.url || ""}
+            value={draftBlog.url || ''}
             name="url"
             onChange={({ target }) =>
               setDraftBlog({ ...draftBlog, url: target.value })
@@ -60,7 +61,11 @@ const NewBlogForm = ({ handleNewBlog }) => {
         <button type="submit">create</button>
       </form>
     </>
-  );
-};
+  )
+}
 
-export default NewBlogForm;
+NewBlogForm.propTypes = {
+  handleNewBlog: PropTypes.func.isRequired
+}
+
+export default NewBlogForm
