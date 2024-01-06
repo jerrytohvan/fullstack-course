@@ -36,22 +36,28 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   response.status(201).json(newBlog);
 });
 
-blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
-  const { id } = request.params;
-  const user  = request.user;
+blogsRouter.delete(
+  '/:id',
+  middleware.userExtractor,
+  async (request, response) => {
+    const { id } = request.params;
+    const user = request.user;
 
-  const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id);
 
-  if (!blog) {
-    return response.status(404).json({ error: 'blog not found' });
+    if (!blog) {
+      return response.status(404).json({ error: 'blog not found' });
+    }
+
+    if (`${blog.user}` !== user.id) {
+      return response
+        .status(401)
+        .json({ error: 'access limited to delete blog' });
+    }
+    await Blog.findByIdAndDelete(id);
+    response.status(204).end();
   }
-
-  if (`${blog.user}` !== user.id) {
-    return response.status(401).json({ error: 'access limited to delete blog' });
-  }
-  await Blog.findByIdAndDelete(id);
-  response.status(204).end();
-});
+);
 
 blogsRouter.put('/:id', async (request, response) => {
   const body = request.body;

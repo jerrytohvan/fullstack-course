@@ -1,6 +1,4 @@
-import { useRef, useState, useEffect } from "react";
-// import Togglable from "./Toggable";
-import blogService from "../services/blogs";
+import { useState } from "react";
 
 const blogStyle = {
   paddingTop: 10,
@@ -10,7 +8,13 @@ const blogStyle = {
   marginBottom: 5,
 };
 
-const Blog = ({ blog, handleLikeBlog }) => {
+const confirmDeleteBlog = (handleDeleteBlog, blog) => {
+  if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+    handleDeleteBlog(blog);
+  }
+};
+
+const Blog = ({ blog, handleLikeBlog, handleDeleteBlog }) => {
   const [blogExpanded, setBlogExpanded] = useState(false);
 
   const toggleVisibility = () => setBlogExpanded(!blogExpanded);
@@ -28,6 +32,10 @@ const Blog = ({ blog, handleLikeBlog }) => {
             <button onClick={() => handleLikeBlog(blog)}>like</button>
           </p>
           {blog.user.name}
+          <br/>
+          <button onClick={() => confirmDeleteBlog(handleDeleteBlog, blog)}>
+            remove
+          </button>
         </>
       );
     }
