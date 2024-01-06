@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 // import Togglable from "./Toggable";
+import blogService from "../services/blogs";
 
 const blogStyle = {
   paddingTop: 10,
@@ -9,7 +10,7 @@ const blogStyle = {
   marginBottom: 5,
 };
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLikeBlog }) => {
   const [blogExpanded, setBlogExpanded] = useState(false);
 
   const toggleVisibility = () => setBlogExpanded(!blogExpanded);
@@ -23,7 +24,8 @@ const Blog = ({ blog }) => {
           <button onClick={toggleVisibility}>hide</button>
           <p>{blog.url}</p>
           <p>
-            likes {blog.likes} <button>like</button>
+            likes {blog.likes}{" "}
+            <button onClick={() => handleLikeBlog(blog)}>like</button>
           </p>
           {blog.user.name}
         </>

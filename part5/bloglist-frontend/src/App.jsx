@@ -16,8 +16,9 @@ const App = () => {
   const newBlogRef = useRef();
 
   useEffect(() => {
+    console.log("refreshing blog posts");
     blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+  }, [successNotification]);
 
   useEffect(() => {
     const loggedInUser = window.localStorage.getItem("loggedBlogUser");
@@ -79,6 +80,14 @@ const App = () => {
     }
   };
 
+  const handleLikeBlog = async (blog) => {
+    const updatedBlog = await blogService.addLike(blog);
+    setSuccessNotification(`Like added to blog ${updatedBlog.title}`);
+    setTimeout(() => {
+      setSuccessNotification(null);
+    }, 5000);
+  };
+
   const loginForm = () => (
     <>
       <h2>log in to application</h2>
@@ -129,7 +138,7 @@ const App = () => {
       <br />
       <>
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} handleLikeBlog={handleLikeBlog} />
         ))}
       </>
     </>
