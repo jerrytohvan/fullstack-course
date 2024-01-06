@@ -17,7 +17,21 @@ const App = () => {
 
   useEffect(() => {
     console.log("refreshing blog posts");
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    const getAllBlogs = blogService.getAll().then((blogs) => {
+      const sortedBlogs = blogs.sort((curr, next) => {
+        const currentLikes = curr.likes;
+        const nextLikes = next.likes
+        if (currentLikes < nextLikes) {
+          return 1;
+        }
+        if (currentLikes > nextLikes) {
+          return -1;
+        }
+      
+        return 0;
+      });
+      setBlogs(sortedBlogs);
+    });
   }, [successNotification]);
 
   useEffect(() => {
