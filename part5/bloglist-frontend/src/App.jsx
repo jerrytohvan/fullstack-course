@@ -17,7 +17,7 @@ const App = () => {
 
   useEffect(() => {
     console.log('refreshing blog posts')
-    const getAllBlogs = blogService.getAll().then((blogs) => {
+    blogService.getAll().then((blogs) => {
       const sortedBlogs = blogs.sort((curr, next) => {
         const currentLikes = curr.likes
         const nextLikes = next.likes
