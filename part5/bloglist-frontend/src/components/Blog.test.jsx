@@ -26,8 +26,8 @@ describe('<Blog />', () => {
     const { container } = render(
       <Blog
         blog={mockBlog}
-        handleLikeBlog={() => handleBlogLike}
-        handleDeleteBlog={() => handleDeleteBlog}
+        handleLikeBlog={handleBlogLike}
+        handleDeleteBlog={handleDeleteBlog}
       />
     )
     const divShow = screen.getByText('view')
@@ -39,8 +39,8 @@ describe('<Blog />', () => {
     const { container } = render(
       <Blog
         blog={mockBlog}
-        handleLikeBlog={() => handleBlogLike}
-        handleDeleteBlog={() => handleDeleteBlog}
+        handleLikeBlog={handleBlogLike}
+        handleDeleteBlog={handleDeleteBlog}
       />
     )
     const divShow = screen.getByText('view')
@@ -53,5 +53,25 @@ describe('<Blog />', () => {
 
     const divhide = screen.getByText('hide')
     expect(divhide).toBeDefined()
+  })
+
+  test('when a like button is clicked twice, two likes were addded', async () => {
+    render(
+      <Blog
+        blog={mockBlog}
+        handleLikeBlog={handleBlogLike}
+        handleDeleteBlog={handleDeleteBlog}
+      />
+    )
+    const divShow = screen.getByText('view')
+    const user = userEvent.setup()
+    await user.click(divShow)
+
+    const divLike = screen.getByText('like')
+    await user.click(divLike)
+    await user.click(divLike)
+
+    expect(handleBlogLike.mock.calls).toHaveLength(2)
+    expect(handleBlogLike.mock.calls[0][0].id).toBe(mockBlog.id)
   })
 })
