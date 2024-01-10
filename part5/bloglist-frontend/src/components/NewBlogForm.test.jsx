@@ -3,22 +3,11 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import NewBlogForm from './NewBlogForm'
+import { mockBlog } from '../mockData/mockBlog'
 
 describe('<NewBlogForm />', () => {
   const handleNewBlog = jest.fn()
 
-  const mockBlog = {
-    title: 'new admin blog',
-    author: 'jerry tohvan',
-    url: 'https://www.google.com',
-    likes: 22,
-    user: {
-      username: 'jerry',
-      name: 'Admin',
-      id: '658d2edc638aaf242542e423',
-    },
-    id: '658d32894697d2ed83917fa1',
-  }
 
   test('create new blog form is sent correctly', async () => {
     const { container } = render(<NewBlogForm handleNewBlog={handleNewBlog} />)

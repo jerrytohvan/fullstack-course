@@ -3,45 +3,30 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import { mockBlog } from '../mockData/mockBlog'
 
 describe('<Blog />', () => {
   const handleBlogLike = jest.fn()
   const handleDeleteBlog = jest.fn()
+  let container
 
-  const mockBlog = {
-    title: 'new admin blog',
-    author: 'jerry tohvan',
-    url: 'https://www.google.com',
-    likes: 22,
-    user: {
-      username: 'jerry',
-      name: 'Admin',
-      id: '658d2edc638aaf242542e423',
-    },
-    id: '658d32894697d2ed83917fa1',
-  }
-
-  test('blog is shown with toggle to view details', async () => {
-    const { container } = render(
+  beforeEach(() => {
+    container = render(
       <Blog
         blog={mockBlog}
         handleLikeBlog={handleBlogLike}
         handleDeleteBlog={handleDeleteBlog}
       />
-    )
+    ).container
+  })
+
+  test('blog is shown with toggle to view details', async () => {
     const divShow = screen.getByText('view')
     expect(divShow).toBeDefined()
     expect(container).not.toHaveTextContent(mockBlog.url)
   })
 
   test('blog details are shown upon toggling view', async () => {
-    const { container } = render(
-      <Blog
-        blog={mockBlog}
-        handleLikeBlog={handleBlogLike}
-        handleDeleteBlog={handleDeleteBlog}
-      />
-    )
     const divShow = screen.getByText('view')
 
     const user = userEvent.setup()
@@ -55,13 +40,6 @@ describe('<Blog />', () => {
   })
 
   test('when a like button is clicked twice, two likes were addded', async () => {
-    render(
-      <Blog
-        blog={mockBlog}
-        handleLikeBlog={handleBlogLike}
-        handleDeleteBlog={handleDeleteBlog}
-      />
-    )
     const divShow = screen.getByText('view')
     const user = userEvent.setup()
     await user.click(divShow)
