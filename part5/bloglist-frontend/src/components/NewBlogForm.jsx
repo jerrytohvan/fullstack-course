@@ -31,6 +31,7 @@ const NewBlogForm = ({ handleNewBlog }) => {
             type="text"
             value={draftBlog.title || ''}
             name="title"
+            id="title"
             onChange={({ target }) =>
               setDraftBlog({ ...draftBlog, title: target.value })
             }
@@ -42,6 +43,7 @@ const NewBlogForm = ({ handleNewBlog }) => {
             type="text"
             value={draftBlog.author || ''}
             name="author"
+            id="author"
             onChange={({ target }) =>
               setDraftBlog({ ...draftBlog, author: target.value })
             }
@@ -53,6 +55,7 @@ const NewBlogForm = ({ handleNewBlog }) => {
             type="text"
             value={draftBlog.url || ''}
             name="url"
+            id="url"
             onChange={({ target }) =>
               setDraftBlog({ ...draftBlog, url: target.value })
             }
