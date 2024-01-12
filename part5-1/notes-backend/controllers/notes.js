@@ -68,5 +68,3 @@ notesRouter.put('/:id', async (request, response) => {
 });
 
 module.exports = notesRouter;
-
-// https://fullstackopen.com/en/part4/user_administration

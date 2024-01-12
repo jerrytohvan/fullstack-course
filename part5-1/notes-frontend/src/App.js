@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react'
 import noteService from './services/notes'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
-import Togglable from './components/Toggable'
+import Toggleable from './components/Toggleable'
 import NoteForm from './components/NoteForm'
 
 const App = () => {
@@ -33,7 +33,6 @@ const App = () => {
       noteService.setToken(user.token)
     }
   }, [])
-
 
   const addNote = (noteObject) => {
     noteFormRef.current.toggleVisibility()
@@ -96,7 +95,7 @@ const App = () => {
 
   const loginForm = () => {
     return (
-      <Togglable buttonLabel="login" key="login">
+      <Toggleable buttonLabel="login" key="login">
         <LoginForm
           username={username}
           password={password}
@@ -104,14 +103,17 @@ const App = () => {
           handlePasswordChange={({ target }) => setPassword(target.value)}
           handleSubmit={handleLogin}
         />
-      </Togglable>
+      </Toggleable>
     )
   }
 
   const noteForm = () => (
-    <Togglable buttonLabel="new note" ref={noteFormRef}>
-      <NoteForm createNote={addNote} />
-    </Togglable>
+    <>
+      <p>{user.name} logged in</p>
+      <Toggleable buttonLabel="new note" ref={noteFormRef}>
+        <NoteForm createNote={addNote} />
+      </Toggleable>
+    </>
   )
 
   const logoutButton = () => (
@@ -123,7 +125,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
-      {errorMessage ?? <Notification message={errorMessage} />}
+      {errorMessage && <Notification message={errorMessage} />}
       {!user ? loginForm() : noteForm()}
       <h2>Notes</h2>
       <div>

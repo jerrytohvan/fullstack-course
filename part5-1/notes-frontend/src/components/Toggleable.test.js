@@ -1,19 +1,19 @@
 import React from 'react'
 
-import Togglable from './Togglable'
+import Toggleable from './Toggleable'
 
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-describe('<Togglable />', () => {
+describe('<Toggleable />', () => {
   let container
 
   beforeEach(() => {
     container = render(
-      <Togglable buttonLabel="show...">
+      <Toggleable buttonLabel="show...">
         <div className="testDiv">togglable content</div>
-      </Togglable>
+      </Toggleable>
     ).container
   })
 
