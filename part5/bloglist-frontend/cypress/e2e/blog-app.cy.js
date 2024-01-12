@@ -32,4 +32,38 @@ describe('Blog app', function () {
       cy.get('html').should('not.contain', 'John Doe logged in')
     })
   })
+
+  describe('When logged in', function () {
+    beforeEach(function () {
+      const user = Cypress.env('MOCK_USER')
+      cy.login({ username: user.username, password: user.password })
+      cy.createBlog({
+        title: 'test blog',
+        author: 'test author',
+        url: 'test url',
+      })
+
+      cy.createBlog({
+        title: 'another test blog',
+        author: 'another test author',
+        url: 'another test url',
+      })
+    })
+
+    it('A blog can be created', function () {
+      cy.contains('John Doe logged in')
+      cy.contains('new blog')
+
+      cy.contains('test blog')
+      cy.contains('test author')
+      cy.should('not.contain', 'test url')
+
+      cy.contains('another test blog')
+      cy.contains('another test author')
+
+      cy.contains('test blog').contains('view').click()
+      cy.contains('test url')
+    })
+  })
+
 })

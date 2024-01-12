@@ -29,28 +29,34 @@ Cypress.Commands.add('login', ({ username, password }) => {
     username,
     password,
   }).then(({ body }) => {
-    localStorage.setItem(Cypress.env('LOGGED_IN_SESSION'), JSON.stringify(body))
+    localStorage.setItem(
+      Cypress.env('LOGGED_IN_SESSION'),
+      JSON.stringify(body)
+    )
     cy.visit('')
   })
 })
 
-// Cypress.Commands.add("createBlog", ({ content, important }) => {
-//   cy.request({
-//     url: `${Cypress.env("BACKEND")}/blogs`,
-//     method: "POST",
-//     body: { content, important },
-//     headers: {
-//       Authorization: `Bearer ${
-//         JSON.parse(localStorage.getItem(Cypress.env("LOGGED_IN_SESSION"))).token
-//       }`,
-//     },
-//   });
-//   cy.visit("");
-// });
+Cypress.Commands.add('createBlog', ({ title, author, url }) => {
+  cy.request({
+    url: `${Cypress.env('BACKEND')}/blogs`,
+    method: 'POST',
+    body: { title, author, url },
+    headers: {
+      Authorization: `Bearer ${
+        JSON.parse(localStorage.getItem(Cypress.env('LOGGED_IN_SESSION'))).token
+      }`,
+    },
+  })
+  cy.visit('')
+})
 
 Cypress.Commands.add('resetDb', () => {
   cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
-  cy.request('POST', `${Cypress.env('BACKEND')}/users`, Cypress.env('MOCK_USER'))
-
+  cy.request(
+    'POST',
+    `${Cypress.env('BACKEND')}/users`,
+    Cypress.env('MOCK_USER')
+  )
   cy.visit('')
 })
