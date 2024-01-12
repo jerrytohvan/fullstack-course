@@ -50,12 +50,7 @@ Cypress.Commands.add('login', ({ username, password }) => {
 
 Cypress.Commands.add('resetDb', () => {
   cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
-  const user = {
-    name: 'Matti Luukkainen',
-    username: 'mluukkai',
-    password: 'salainen',
-  }
-  cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user)
+  cy.request('POST', `${Cypress.env('BACKEND')}/users`, Cypress.env('MOCK_USER'))
 
   cy.visit('')
 })

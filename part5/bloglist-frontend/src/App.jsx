@@ -120,7 +120,7 @@ const App = () => {
             type="text"
             value={username}
             id="username"
-            name="Username"
+            name="username"
             onChange={({ target }) => setUsername(target.value)}
           />
         </div>
@@ -130,7 +130,7 @@ const App = () => {
             type="password"
             value={password}
             id="password"
-            name="Password"
+            name="password"
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
