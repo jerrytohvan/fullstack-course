@@ -34,7 +34,7 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog }) => {
           </p>
           {blog.user.name}
           <br/>
-          <button onClick={() => confirmDeleteBlog(handleDeleteBlog, blog)}>
+          <button id='remove-button' onClick={() => confirmDeleteBlog(handleDeleteBlog, blog)}>
             remove
           </button>
         </>

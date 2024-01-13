@@ -24,40 +24,45 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add("login", ({ username, password }) => {
-  cy.request("POST", `${Cypress.env("BACKEND")}/login`, {
+Cypress.Commands.add('login', ({ username, password }) => {
+  cy.request('POST', `${Cypress.env('BACKEND')}/login`, {
     username,
     password,
   }).then(({ body }) => {
     localStorage.setItem(
-      Cypress.env("LOGGED_IN_SESSION"),
+      Cypress.env('LOGGED_IN_SESSION'),
       JSON.stringify(body)
-    );
-    cy.visit("");
-  });
-});
+    )
+    cy.visit('')
+  })
+})
 
-Cypress.Commands.add("createBlog", ({ title, author, url }) => {
+Cypress.Commands.add('createBlog', ({ title, author, url }) => {
   cy.request({
-    url: `${Cypress.env("BACKEND")}/blogs`,
-    method: "POST",
+    url: `${Cypress.env('BACKEND')}/blogs`,
+    method: 'POST',
     body: { title, author, url },
     headers: {
       Authorization: `Bearer ${
-        JSON.parse(localStorage.getItem(Cypress.env("LOGGED_IN_SESSION"))).token
+        JSON.parse(localStorage.getItem(Cypress.env('LOGGED_IN_SESSION'))).token
       }`,
     },
-  });
-  cy.visit("");
-});
+  })
+  cy.visit('')
+})
 
-Cypress.Commands.add("resetDb", () => {
-  cy.request("POST", `${Cypress.env("BACKEND")}/testing/reset`);
+Cypress.Commands.add('resetDb', () => {
+  cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
+  cy.request('POST', `${Cypress.env('BACKEND')}/users`, {
+    username: 'janedoe',
+    name: 'Jane Doe',
+    password: 'janedoe',
+  })
   cy.request(
-    "POST",
-    `${Cypress.env("BACKEND")}/users`,
-    Cypress.env("MOCK_USER")
+    'POST',
+    `${Cypress.env('BACKEND')}/users`,
+    Cypress.env('MOCK_USER')
   ).then(() => {
-    cy.visit("");
-  });
-});
+    cy.visit('')
+  })
+})

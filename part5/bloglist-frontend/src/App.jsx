@@ -103,11 +103,18 @@ const App = () => {
   }
 
   const handleDeleteBlog = async (blog) => {
-    await blogService.deleteBlog(blog)
-    setSuccessNotification(`Blog ${blog.title} removed!`)
-    setTimeout(() => {
-      setSuccessNotification(null)
-    }, 5000)
+    try {
+      await blogService.deleteBlog(blog)
+      setSuccessNotification(`Blog ${blog.title} removed!`)
+      setTimeout(() => {
+        setSuccessNotification(null)
+      }, 5000)
+    } catch (exception) {
+      setErrorMessage(exception.response.data.error)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
   }
 
   const loginForm = () => (
@@ -134,7 +141,9 @@ const App = () => {
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button id="login-submit" type="submit">login</button>
+        <button id="login-submit" type="submit">
+          login
+        </button>
       </form>
     </>
   )
@@ -147,7 +156,9 @@ const App = () => {
 
   const logoutButton = () => (
     <form onSubmit={handleLogout}>
-      <button type="submit">logout</button>
+      <button id="logout-button" type="submit">
+        logout
+      </button>
     </form>
   )
 

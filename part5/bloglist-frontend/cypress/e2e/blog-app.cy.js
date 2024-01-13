@@ -72,6 +72,28 @@ describe('Blog app', function () {
       cy.contains('likes 1')
       cy.contains('Like added to blog test blog')
     })
-  })
 
+    it('A blog can be removed', function () {
+      cy.contains('another test blog').contains('view').click()
+      cy.get('#remove-button').click()
+      cy.should('not.contain', 'test url')
+      cy.contains('Blog another test blog removed!')
+    })
+
+    it('A blog can be removed by user who created blog', function () {
+      cy.get('#logout-button').click()
+      cy.login({ username: 'janedoe', password: 'janedoe' })
+      cy.contains('Jane Doe logged in')
+      cy.should('not.contain', 'test url')
+      cy.contains('another test blog').contains('view').click()
+
+      cy.intercept({
+        method: 'DELETE',
+        url: '*',
+      }).as('deleteApi')
+
+      cy.get('#remove-button').click()
+      cy.contains(' access limited to delete blog')
+    })
+  })
 })
