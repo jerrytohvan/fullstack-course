@@ -15,9 +15,10 @@ const confirmDeleteBlog = (handleDeleteBlog, blog) => {
   }
 }
 
-const Blog = ({ blog, handleLikeBlog, handleDeleteBlog }) => {
+const Blog = ({ blog, user, handleLikeBlog, handleDeleteBlog }) => {
   const [blogExpanded, setBlogExpanded] = useState(false)
-
+  console.log(blog)
+  console.log(user)
   const toggleVisibility = () => setBlogExpanded(!blogExpanded)
 
   const showBlogList = () => {
@@ -30,13 +31,20 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog }) => {
           <p>{blog.url}</p>
           <p>
             likes {blog.likes}{' '}
-            <button id='like-button' onClick={() => handleLikeBlog(blog)}>like</button>
+            <button id="like-button" onClick={() => handleLikeBlog(blog)}>
+              like
+            </button>
           </p>
           {blog.user.name}
-          <br/>
-          <button id='remove-button' onClick={() => confirmDeleteBlog(handleDeleteBlog, blog)}>
-            remove
-          </button>
+          <br />
+          {user.username === blog.user.username && (
+            <button
+              id="remove-button"
+              onClick={() => confirmDeleteBlog(handleDeleteBlog, blog)}
+            >
+              remove
+            </button>
+          )}
         </>
       )
     }
@@ -54,8 +62,7 @@ const Blog = ({ blog, handleLikeBlog, handleDeleteBlog }) => {
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   handleLikeBlog: PropTypes.func.isRequired,
-  handleDeleteBlog: PropTypes.func.isRequired
+  handleDeleteBlog: PropTypes.func.isRequired,
 }
-
 
 export default Blog

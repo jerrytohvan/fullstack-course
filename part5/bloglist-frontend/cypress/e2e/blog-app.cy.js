@@ -87,13 +87,16 @@ describe('Blog app', function () {
       cy.should('not.contain', 'test url')
       cy.contains('another test blog').contains('view').click()
 
-      cy.intercept({
-        method: 'DELETE',
-        url: '*',
-      }).as('deleteApi')
+      cy.get('#remove-button').should('not.exist')
 
-      cy.get('#remove-button').click()
-      cy.contains(' access limited to delete blog')
+      // to test with intercept if the delete button is not disabled
+      // cy.intercept({
+      //   method: 'DELETE',
+      //   url: '*',
+      // }).as('deleteApi')
+
+      // cy.get('#remove-button').click()
+      // cy.contains('access limited to delete blog')
     })
   })
 })
