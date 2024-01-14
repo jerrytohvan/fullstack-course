@@ -98,5 +98,15 @@ describe('Blog app', function () {
       // cy.get('#remove-button').click()
       // cy.contains('access limited to delete blog')
     })
+
+    it('blogs are sorted by most likes', function () {
+      cy.contains('test blog').contains('view').click().as('topBlog')
+      cy.get('@topBlog').get('#like-button').click()
+      cy.get('div#blog-list').should('have.length', 2)
+      cy.get('div#blog-list').eq(0).should('contain', 'test blog')
+      cy.get('div#blog-list')
+        .eq(1)
+        .should('contain', 'another test blog')
+    })
   })
 })

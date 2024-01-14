@@ -173,13 +173,14 @@ const App = () => {
       <br />
       <>
         {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            user={user}
-            handleLikeBlog={handleLikeBlog}
-            handleDeleteBlog={handleDeleteBlog}
-          />
+          <div key={blog.id} id="blog-list">
+            <Blog
+              blog={blog}
+              user={user}
+              handleLikeBlog={handleLikeBlog}
+              handleDeleteBlog={handleDeleteBlog}
+            />
+          </div>
         ))}
       </>
     </>
