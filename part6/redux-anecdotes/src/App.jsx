@@ -1,13 +1,15 @@
-import AnecdoteForm from './AnecdoteForm'
-import AnecdoteList from './AnecdoteList'
+import { AnecdoteFilter } from "./AnecdoteFilter";
+import { AnecdoteForm } from "./AnecdoteForm";
+import { AnecdoteList } from "./AnecdoteList";
 
-const App = () => {  
+const App = () => {
   return (
     <div>
-     <AnecdoteList />
-     <AnecdoteForm />
+      <AnecdoteFilter />
+      <AnecdoteList />
+      <AnecdoteForm />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

@@ -37,7 +37,7 @@ export const createAnecdote = (content) => {
   }
 }
 
-const reducer = (state = initialState, action) => {
+export const anecdotesReducer = (state = initialState, action) => {
   console.log("state now: ", state);
   console.log("action", action);
   if (action.type === "VOTE") {
@@ -56,5 +56,3 @@ const reducer = (state = initialState, action) => {
   }
   return state;
 };
-
-export default reducer;
