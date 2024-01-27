@@ -22,6 +22,3 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <App />
   </Provider>
 )
-
-
-// https://fullstackopen.com/en/part6/many_reducers#redux-toolkit
