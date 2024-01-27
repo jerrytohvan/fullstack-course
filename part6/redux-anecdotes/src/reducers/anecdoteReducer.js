@@ -43,7 +43,6 @@ const reducer = (state = initialState, action) => {
   if (action.type === "VOTE") {
     const objectId = action.payload.id;
     const objectToChange = state.find((anecdote) => anecdote.id === objectId);
-    console.log(`objectToChange`, objectToChange);
     const updatedObject = {
       ...objectToChange,
       votes: objectToChange.votes + 1,
