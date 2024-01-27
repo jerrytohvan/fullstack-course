@@ -4,6 +4,7 @@ import { voteAnecdote } from "./reducers/anecdoteReducer";
 export const AnecdoteList = () => {
   const anecdotes = useSelector(({ anecdotes, filters }) => {
     const filterQuery = filters.filter;
+    console.log(filterQuery)
 
     if (filterQuery !== null) {
       return anecdotes.filter((anecdote) => anecdote.content.includes(filters.filter));
@@ -11,8 +12,9 @@ export const AnecdoteList = () => {
       return anecdotes;
     }
   });
-
-  const sortedAncedotes = anecdotes.sort((a, b) => b.votes - a.votes);
+  console.log(anecdotes)
+  console.log(anecdotes.slice())
+  const sortedAncedotes = anecdotes.slice().sort((a, b) => b.votes - a.votes);
   const dispatch = useDispatch();
 
   return (
