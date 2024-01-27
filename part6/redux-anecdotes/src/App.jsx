@@ -7,9 +7,9 @@ const App = () => {
   const dispatch = useDispatch()
 
   const addNewAnecdote = (event) => {
-    event.preventDefault();
+    event.preventDefault()
     const content = event.target.note.value
-    dispatch(createAnecdote(content));
+    dispatch(createAnecdote(content))
   }
 
   return (
