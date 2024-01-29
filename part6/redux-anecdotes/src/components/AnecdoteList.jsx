@@ -19,7 +19,7 @@ export const AnecdoteList = () => {
   const sortedAncedotes = anecdotes.slice().sort((a, b) => b.votes - a.votes);
 
   const voteAndNotifyAnectode = (anecdote) => {
-    dispatch(voteAnecdote(anecdote.id));
+    dispatch(voteAnecdote(anecdote));
     dispatch(setNotification(`You voted '${anecdote.content}'`));
     setTimeout(() => { dispatch(setNotification("")) }, 5000);
   }
